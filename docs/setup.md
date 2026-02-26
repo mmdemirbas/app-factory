@@ -142,22 +142,16 @@ Both should pass with no errors.
 
 ---
 
-## iOS Setup
+### iOS Setup
 
-The iOS entry point requires a real Xcode project that can't be generated as
-plain files. Generate it after the Kotlin modules compile successfully.
+The iOS client is a standard Xcode project that integrates the shared Kotlin UI.
 
-1. Complete `./gradlew build` successfully first.
+1. Open Xcode
+2. Select **Open a project or file**
+3. Navigate to `clients/ios/iosApp.xcodeproj` and open it
+4. Select a simulator target (e.g., iPhone 15) and press **Run** (⌘R)
 
-2. Open the project in Android Studio or IntelliJ IDEA with the KMP plugin,
-   then use **File → New → KMP iOS Application** pointing to `clients/ios/`.
-
-   Or follow the manual steps in the
-   [JetBrains KMP docs](https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-setup.html).
-
-3. Once the Xcode project builds, commit it to the repo.
-
----
+> **Note:** The first build in Xcode may take several minutes as it compiles all KMP dependencies via the Gradle build phase.
 
 ## Troubleshooting
 

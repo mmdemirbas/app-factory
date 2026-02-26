@@ -19,6 +19,7 @@ apply(plugin = "org.jetbrains.kotlinx.kover")
     .let { (it as com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget).apply {
         compileSdk = 35
         minSdk = 26
+        namespace = "com.appfactory" + project.path.replace(":", ".").replace("-", "")
     }}
 
 extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension> {

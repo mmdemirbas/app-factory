@@ -19,7 +19,16 @@ kotlin {
 }
 
 kotlin {
-    android {
-        namespace = "com.appfactory.ui"
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "SharedUI"
+            isStatic = true
+        }
     }
+    
 }
+
