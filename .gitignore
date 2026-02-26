@@ -1,0 +1,15 @@
+.gradle/
+build/
+.idea/
+*.iml
+local.properties
+.DS_Store
+.env
+*.jks
+*.keystore
+xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+.swiftpm/
+.kotlin/
+yarn.lock

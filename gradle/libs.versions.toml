@@ -1,0 +1,117 @@
+[versions]
+# ── Core ──────────────────────────────────────────────────
+kotlin                  = "2.1.21"
+agp                     = "9.0.1"
+compose-multiplatform   = "1.7.3"
+
+# ── Backend ───────────────────────────────────────────────
+ktor                    = "3.0.3"
+
+# ── Database ──────────────────────────────────────────────
+sqldelight              = "2.0.2"
+
+# ── DI ────────────────────────────────────────────────────
+koin                    = "4.0.0"
+
+# ── KotlinX ───────────────────────────────────────────────
+kotlinx-coroutines      = "1.9.0"
+kotlinx-serialization   = "1.8.1"
+kotlinx-datetime        = "0.6.1"
+
+# ── Utilities ─────────────────────────────────────────────
+uuid                    = "0.8.4"
+
+# ── Navigation ────────────────────────────────────────────
+# JetBrains multiplatform navigation — NOT the AndroidX artifact
+jetbrains-navigation    = "2.8.0-alpha10"
+
+# ── PowerSync ─────────────────────────────────────────────
+# Kotlin MPP SDK. Check https://github.com/powersync-ja/powersync-kotlin for latest.
+powersync               = "1.0.0-BETA29"
+
+# ── Testing ───────────────────────────────────────────────
+archunit                = "1.3.0"
+kover                   = "0.9.6"
+detekt                  = "1.23.7"
+kotest                  = "5.9.1"
+pitest                  = "1.15.3"
+activity-compose        = "1.10.1"
+
+[libraries]
+# ── KotlinX ───────────────────────────────────────────────
+kotlinx-coroutines-core     = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core",      version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-test     = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test",      version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-json  = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json",   version.ref = "kotlinx-serialization" }
+kotlinx-datetime            = { module = "org.jetbrains.kotlinx:kotlinx-datetime",              version.ref = "kotlinx-datetime" }
+
+# ── UUID (KMP-native) ─────────────────────────────────────
+uuid                        = { module = "com.benasher44:uuid",                                  version.ref = "uuid" }
+
+# ── Koin ──────────────────────────────────────────────────
+koin-core                   = { module = "io.insert-koin:koin-core",                             version.ref = "koin" }
+koin-compose                = { module = "io.insert-koin:koin-compose",                          version.ref = "koin" }
+koin-compose-viewmodel      = { module = "io.insert-koin:koin-compose-viewmodel",                version.ref = "koin" }
+koin-android                = { module = "io.insert-koin:koin-android",                          version.ref = "koin" }
+
+# ── AndroidX Activity ─────────────────────────────────────
+activity-compose            = { module = "androidx.activity:activity-compose",                    version.ref = "activity-compose" }
+
+# ── Ktor Server ───────────────────────────────────────────
+ktor-server-core            = { module = "io.ktor:ktor-server-core-jvm",                         version.ref = "ktor" }
+ktor-server-netty           = { module = "io.ktor:ktor-server-netty-jvm",                        version.ref = "ktor" }
+ktor-server-content-neg     = { module = "io.ktor:ktor-server-content-negotiation-jvm",          version.ref = "ktor" }
+ktor-server-cors            = { module = "io.ktor:ktor-server-cors-jvm",                         version.ref = "ktor" }
+ktor-server-auth            = { module = "io.ktor:ktor-server-auth-jvm",                         version.ref = "ktor" }
+ktor-server-auth-jwt        = { module = "io.ktor:ktor-server-auth-jwt-jvm",                     version.ref = "ktor" }
+ktor-server-call-logging    = { module = "io.ktor:ktor-server-call-logging-jvm",                 version.ref = "ktor" }
+ktor-server-test-host       = { module = "io.ktor:ktor-server-test-host-jvm",                    version.ref = "ktor" }
+ktor-serialization-json     = { module = "io.ktor:ktor-serialization-kotlinx-json-jvm",          version.ref = "ktor" }
+
+# ── Ktor Client (connectors) ──────────────────────────────
+ktor-client-core            = { module = "io.ktor:ktor-client-core",                             version.ref = "ktor" }
+ktor-client-cio             = { module = "io.ktor:ktor-client-cio",                              version.ref = "ktor" }
+ktor-client-content-neg     = { module = "io.ktor:ktor-client-content-negotiation",              version.ref = "ktor" }
+
+# ── SQLDelight ────────────────────────────────────────────
+sqldelight-runtime          = { module = "app.cash.sqldelight:runtime",                          version.ref = "sqldelight" }
+sqldelight-coroutines       = { module = "app.cash.sqldelight:coroutines-extensions",            version.ref = "sqldelight" }
+sqldelight-android-driver   = { module = "app.cash.sqldelight:android-driver",                  version.ref = "sqldelight" }
+sqldelight-native-driver    = { module = "app.cash.sqldelight:native-driver",                   version.ref = "sqldelight" }
+sqldelight-sqlite-driver    = { module = "app.cash.sqldelight:sqlite-driver",                   version.ref = "sqldelight" }
+sqldelight-web-driver       = { module = "app.cash.sqldelight:web-worker-driver",               version.ref = "sqldelight" }
+
+# ── PowerSync ─────────────────────────────────────────────
+# KMP SDK — added in Phase 5. Placeholder here for catalog completeness.
+# powersync-core = { module = "co.powersync:powersync-kotlin-core", version.ref = "powersync" }
+
+# ── Navigation ────────────────────────────────────────────
+# NOTE: Use this, NOT AndroidX navigation. Required for non-Android targets.
+jetbrains-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "jetbrains-navigation" }
+
+# ── Testing ───────────────────────────────────────────────
+archunit-core               = { module = "com.tngtech.archunit:archunit",                        version.ref = "archunit" }
+kotest-runner-junit5        = { module = "io.kotest:kotest-runner-junit5",                       version.ref = "kotest" }
+kotest-assertions-core      = { module = "io.kotest:kotest-assertions-core",                     version.ref = "kotest" }
+kotest-property             = { module = "io.kotest:kotest-property",                            version.ref = "kotest" }
+
+# ── Build-logic plugin dependencies ───────────────────────
+# These are used inside build-logic/build.gradle.kts only.
+android-gradlePlugin        = { module = "com.android.tools.build:gradle",                       version.ref = "agp" }
+kotlin-gradlePlugin         = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin",            version.ref = "kotlin" }
+compose-gradlePlugin        = { module = "org.jetbrains.compose:compose-gradle-plugin",          version.ref = "compose-multiplatform" }
+kotlin-compose-gradlePlugin        = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
+kotlin-serialization-gradlePlugin  = { module = "org.jetbrains.kotlin:kotlin-serialization",                                                   version.ref = "kotlin" }
+kover-gradlePlugin                 = { module = "org.jetbrains.kotlinx:kover-gradle-plugin",                                                    version.ref = "kover" }
+
+[plugins]
+kotlin-multiplatform        = { id = "org.jetbrains.kotlin.multiplatform",          version.ref = "kotlin" }
+kotlin-android              = { id = "org.jetbrains.kotlin.android",                version.ref = "kotlin" }
+kotlin-jvm                  = { id = "org.jetbrains.kotlin.jvm",                    version.ref = "kotlin" }
+kotlin-serialization        = { id = "org.jetbrains.kotlin.plugin.serialization",   version.ref = "kotlin" }
+kotlin-compose-compiler     = { id = "org.jetbrains.kotlin.plugin.compose",         version.ref = "kotlin" }
+android-application         = { id = "com.android.application",                     version.ref = "agp" }
+android-library             = { id = "com.android.library",                         version.ref = "agp" }
+compose-multiplatform       = { id = "org.jetbrains.compose",                       version.ref = "compose-multiplatform" }
+sqldelight                  = { id = "app.cash.sqldelight",                         version.ref = "sqldelight" }
+kover                       = { id = "org.jetbrains.kotlinx.kover",                 version.ref = "kover" }
+detekt                      = { id = "io.gitlab.arturbosch.detekt",                 version.ref = "detekt" }

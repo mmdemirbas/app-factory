@@ -1,0 +1,47 @@
+# Local development environment.
+# Run: docker compose -f scripts/deploy/docker-compose.yml up -d
+
+services:
+  backend:
+    build:
+      context: ../..
+      dockerfile: scripts/deploy/Dockerfile.backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - ../../.env
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: appfactory
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev -d appfactory"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Nango: OAuth flow management for connectors (ADR-008)
+  # Self-hosted. See https://docs.nango.dev/guides/self-hosting/free-self-hosting/locally
+  nango:
+    image: nangohq/nango:latest
+    ports:
+      - "3003:3003"
+    environment:
+      SERVER_PORT: 3003
+      NANGO_SECRET_KEY_PROD: ${NANGO_SECRET_KEY}
+    volumes:
+      - nango_data:/app/packages/server/nango-integrations
+
+volumes:
+  postgres_data:
+  nango_data:
