@@ -14,4 +14,7 @@ dependencies {
     implementation(libs.kotlin.compose.gradlePlugin)
     implementation(libs.kotlin.serialization.gradlePlugin)
     implementation(libs.kover.gradlePlugin)
+    compileOnly(libs.detekt.gradlePlugin) {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-gradle-plugin")
+    }
 }

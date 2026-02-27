@@ -1,5 +1,6 @@
 plugins {
     id("kmp-library")
+    id("detekt-rules")
 }
 
 kotlin {
@@ -19,11 +20,5 @@ kotlin {
             implementation(libs.archunit.core)
             implementation(libs.kotest.runner.junit5)
         }
-    }
-}
-
-kotlin {
-    android {
-        namespace = "com.appfactory.application"
     }
 }
