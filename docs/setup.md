@@ -147,24 +147,22 @@ BACKEND_PORT=8081 ./gradlew :backend:run
 ./gradlew :clients:web:wasmJsBrowserDevelopmentRun
 ```
 
-Sync mode is always explicit in code (no env/query toggles). Each entrypoint calls
-`createPlatformSyncEngine(SyncEngineMode.…)`.
+Sync mode is selected at build time (no env/query toggles) and injected as a
+generated `configuredSyncMode` constant per client module.
 
 To validate local end-to-end transport with one backend instance:
 
 ```bash
-# Desktop: update clients/desktop/src/main/kotlin/com/appfactory/desktop/Main.kt
-# from SyncEngineMode.PowerSync to:
-# createPlatformSyncEngine(SyncEngineMode.BackendTransport("http://localhost:8081"))
-./gradlew :clients:desktop:run
+./gradlew :clients:desktop:run \
+  -Pappfactory.sync.mode=backend \
+  -Pappfactory.backend.baseUrl=http://localhost:8081
 
-# Web: update clients/web/src/wasmJsMain/kotlin/com/appfactory/web/Main.kt
-# from SyncEngineMode.PowerSync to:
-# createPlatformSyncEngine(SyncEngineMode.BackendTransport("http://localhost:8081"))
-./gradlew :clients:web:wasmJsBrowserDevelopmentRun
+./gradlew :clients:web:wasmJsBrowserDevelopmentRun \
+  -Pappfactory.sync.mode=backend \
+  -Pappfactory.backend.baseUrl=http://localhost:8081
 ```
 
-Default mode in this repo is `SyncEngineMode.PowerSync` in each client entrypoint.
+Default mode in this repo is `SyncEngineMode.PowerSync`.
 `SyncEngineMode.BackendTransport` is currently implemented for Desktop and Web.
 
 ---
@@ -175,11 +173,14 @@ Shared run configurations under `.idea/runConfigurations` are task-based and map
 
 - `backendApp` → `:backend:run`
 - `desktopApp` → `:clients:desktop:run`
+- `desktopAppLocalBackend` → `:clients:desktop:run` with `-Pappfactory.sync.mode=backend -Pappfactory.backend.baseUrl=http://localhost:8081`
 - `webApp` → `:clients:web:wasmJsBrowserDevelopmentRun`
+- `webAppLocalBackend` → `:clients:web:wasmJsBrowserDevelopmentRun` with `-Pappfactory.sync.mode=backend -Pappfactory.backend.baseUrl=http://localhost:8081`
 - `androidApp` → `:clients:android:installDebug`
 - `iosApp` → `:clients:shared-ui:linkDebugFrameworkIosSimulatorArm64` (builds iOS simulator framework)
 
 Use Xcode to launch the full iOS application UI.
+For `*LocalBackend` configurations, make sure backend is running and reachable at `http://localhost:8081`.
 
 ---
 

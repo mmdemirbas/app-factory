@@ -1,6 +1,7 @@
 # IDE and Editor Configuration
-.idea/
+.idea/*
 !.idea/runConfigurations/
+!.idea/runConfigurations/*.xml
 .vscode/
 *.iml
 
