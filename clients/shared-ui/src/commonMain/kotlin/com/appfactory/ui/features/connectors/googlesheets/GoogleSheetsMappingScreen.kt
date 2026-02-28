@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 /**
@@ -24,6 +25,8 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun GoogleSheetsMappingScreen(
+    onConnectOAuth: () -> Unit,
+    isConnected: Boolean,
     onSaveMapping: (spreadsheetId: String, range: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -47,25 +50,42 @@ fun GoogleSheetsMappingScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            OutlinedTextField(
-                value = spreadsheetId,
-                onValueChange = { spreadsheetId = it },
-                label = { Text("Spreadsheet ID") },
-                singleLine = true
-            )
+            if (!isConnected) {
+                Text(
+                    text = "You must connect your Google account before configuring field mappings.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
 
-            OutlinedTextField(
-                value = sheetRange,
-                onValueChange = { sheetRange = it },
-                label = { Text("Sheet Range / Name") },
-                singleLine = true
-            )
+                Button(
+                    onClick = onConnectOAuth,
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Text("Connect with Google")
+                }
+            } else {
+                OutlinedTextField(
+                    value = spreadsheetId,
+                    onValueChange = { spreadsheetId = it },
+                    label = { Text("Spreadsheet ID") },
+                    singleLine = true
+                )
 
-            Button(
-                onClick = { onSaveMapping(spreadsheetId, sheetRange) },
-                enabled = spreadsheetId.isNotBlank() && sheetRange.isNotBlank()
-            ) {
-                Text("Save Configuration")
+                OutlinedTextField(
+                    value = sheetRange,
+                    onValueChange = { sheetRange = it },
+                    label = { Text("Sheet Range / Name") },
+                    singleLine = true
+                )
+
+                Button(
+                    onClick = { onSaveMapping(spreadsheetId, sheetRange) },
+                    enabled = spreadsheetId.isNotBlank() && sheetRange.isNotBlank()
+                ) {
+                    Text("Save Configuration")
+                }
             }
         }
     }

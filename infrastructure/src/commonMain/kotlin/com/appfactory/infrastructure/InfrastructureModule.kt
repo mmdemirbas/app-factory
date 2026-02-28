@@ -5,8 +5,11 @@ import com.appfactory.domain.port.AppSettingsRepository
 import com.appfactory.domain.port.AuthProvider
 import com.appfactory.domain.port.ConnectorRegistry
 import com.appfactory.domain.port.FeatureFlagRepository
+import com.appfactory.domain.port.OAuthProvider
 import com.appfactory.domain.port.SyncEngine
 import com.appfactory.infrastructure.auth.SupabaseAuthAdapter
+import com.appfactory.infrastructure.auth.nango.NangoClient
+import com.appfactory.infrastructure.auth.nango.NangoOAuthAdapter
 import com.appfactory.infrastructure.connectors.SqlDelightConnectorRegistry
 import com.appfactory.infrastructure.connectors.SupabaseConnectorRegistry
 import com.appfactory.infrastructure.sync.SyncEngineMode
@@ -21,6 +24,10 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.realtime.Realtime
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -41,8 +48,26 @@ object InfrastructureModule {
             }
         }
 
+        single<HttpClient> {
+            HttpClient {
+                install(ContentNegotiation) {
+                    json(Json { ignoreUnknownKeys = true })
+                }
+            }
+        }
+
+        single<NangoClient> {
+            val nangoSecretKey = getProperty("nango.secret.key", "placeholder-nango-key")
+            val nangoUrl = getProperty("nango.url", "http://localhost:3003")
+            NangoClient(get(), nangoSecretKey, nangoUrl)
+        }
+
         single<AuthProvider> {
             SupabaseAuthAdapter(get())
+        }
+
+        single<OAuthProvider> {
+            NangoOAuthAdapter(get())
         }
 
         single<SyncEngine> {

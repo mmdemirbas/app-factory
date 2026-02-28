@@ -7,6 +7,11 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.header
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.serialization.Serializable
@@ -39,8 +44,45 @@ class GoogleSheetsConnectorAdapter(
     }
 
     override suspend fun pushRows(rows: List<GoogleSheetsRow>, config: ConnectorConfig): PushResult {
-        // TODO: Full bidirectional spreadsheet push logic.
-        return PushResult(success = true, rowsUpdated = rows.size)
+        if (rows.isEmpty()) return PushResult(success = true, rowsUpdated = 0)
+        
+        val accessToken = config.credentials["access_token"] 
+            ?: throw IllegalStateException("Google Sheets connector missing access token")
+            
+        val spreadsheetId = config.credentials["spreadsheet_id"] 
+            ?: throw IllegalStateException("Spreadsheet ID must be configured before pushing rows")
+            
+        // Implementation detail: For simplicity we assume updates to existing rows.
+        // A full sync would involve batchUpdate or appending.
+        var totalUpdated = 0
+        
+        for (row in rows) {
+            // Reconstruct a simple row update based on column headers.
+            // Google Sheets requires passing an array of arrays for the values.
+            // A more robust implementation would fetch headers first and map keys to columns.
+            // For now, assume cells map directly to the row array in alphanumeric order of keys.
+            val sortedCells = row.cells.entries.sortedBy { it.key }.map { it.value.value }
+            
+            val updatePayload = GoogleSheetsApiUpdateRequest(
+                range = "${row.sheetName}!A${row.rowIndex}",
+                majorDimension = "ROWS",
+                values = listOf(sortedCells)
+            )
+            
+            val response = httpClient.put("https://sheets.googleapis.com/v4/spreadsheets/$spreadsheetId/values/${updatePayload.range}?valueInputOption=USER_ENTERED") {
+                header("Authorization", "Bearer $accessToken")
+                contentType(ContentType.Application.Json)
+                setBody(updatePayload)
+            }
+            
+            if (response.status.value in 200..299) {
+                totalUpdated++
+            } else {
+                return PushResult(success = false, rowsUpdated = totalUpdated, error = "Failed to update row ${row.rowIndex}")
+            }
+        }
+        
+        return PushResult(success = true, rowsUpdated = totalUpdated)
     }
 
     override fun observeChanges(config: ConnectorConfig): Flow<RemoteChange<GoogleSheetsRow>> {
@@ -55,6 +97,13 @@ private data class GoogleSheetsApiResponse(
     val range: String,
     val majorDimension: String,
     val values: List<List<String>> = emptyList()
+)
+
+@Serializable
+private data class GoogleSheetsApiUpdateRequest(
+    val range: String,
+    val majorDimension: String,
+    val values: List<List<String>>
 )
 
 private fun GoogleSheetsApiResponse.toGoogleSheetsRows(spreadsheetId: String, sheetName: String): List<GoogleSheetsRow> {
