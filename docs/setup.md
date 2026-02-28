@@ -140,6 +140,33 @@ Both should pass with no errors.
 ./gradlew :domain:jvmTest :application:jvmTest  # Tests
 ```
 
+When running Web and Backend together for local sync validation, use different ports:
+
+```bash
+BACKEND_PORT=8081 ./gradlew :backend:run
+./gradlew :clients:web:wasmJsBrowserDevelopmentRun
+```
+
+Sync mode is always explicit in code (no env/query toggles). Each entrypoint calls
+`createPlatformSyncEngine(SyncEngineMode.…)`.
+
+To validate local end-to-end transport with one backend instance:
+
+```bash
+# Desktop: update clients/desktop/src/main/kotlin/com/appfactory/desktop/Main.kt
+# from SyncEngineMode.PowerSync to:
+# createPlatformSyncEngine(SyncEngineMode.BackendTransport("http://localhost:8081"))
+./gradlew :clients:desktop:run
+
+# Web: update clients/web/src/wasmJsMain/kotlin/com/appfactory/web/Main.kt
+# from SyncEngineMode.PowerSync to:
+# createPlatformSyncEngine(SyncEngineMode.BackendTransport("http://localhost:8081"))
+./gradlew :clients:web:wasmJsBrowserDevelopmentRun
+```
+
+Default mode in this repo is `SyncEngineMode.PowerSync` in each client entrypoint.
+`SyncEngineMode.BackendTransport` is currently implemented for Desktop and Web.
+
 ---
 
 ### JetBrains IDE run configurations
@@ -204,6 +231,18 @@ Any time you edit files under `build-logic/src/main/kotlin/`, clear caches:
 ```bash
 rm -rf .gradle build build-logic/build
 ```
+
+### WebAssembly LinkError after sync factory changes
+
+If you see errors like `function import requires a callable`, clean both Gradle
+web outputs and browser cache, then rerun:
+
+```bash
+./gradlew :clients:web:clean
+./gradlew :clients:web:wasmJsBrowserDevelopmentRun
+```
+
+Then hard-refresh the browser tab (`Cmd+Shift+R` on macOS).
 
 ### Docker services not starting
 

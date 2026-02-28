@@ -18,7 +18,7 @@
 ### Acceptance criteria
 - [x] `PowerSyncKotlinAdapter` implements `SyncEngine` contract for non-web targets.
 - [x] `PowerSyncWebAdapter` implements `SyncEngine` contract for wasm/web targets.
-- [x] `createPlatformSyncEngine()` resolves to Kotlin adapter on JVM/Android/iOS and web adapter on wasm.
+- [x] `createPlatformSyncEngine(SyncEngineMode.PowerSync)` resolves to Kotlin adapter on JVM/Android/iOS and web adapter on wasm.
 - [x] `InfrastructureModule` binds `SyncEngine` via platform factory.
 - [x] Offline sync attempts are queued and flushed when connectivity returns.
 

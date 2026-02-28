@@ -23,3 +23,6 @@ Implement PowerSync-based sync adapters and validate offline-first behavior end-
 - [x] Sync adapters queue offline scopes and flush them on reconnect (covered by `PowerSyncKotlinAdapterTest`).
 - [x] Local settings repository now returns/observes defaults when local DB is empty (offline-safe read path).
 - [x] Desktop and Web client compile targets pass with current Phase 5 sync wiring.
+- [x] Local backend transport sync engine added for Desktop/Web to validate cross-client end-to-end sync state against one backend instance.
+- [x] Sync engine mode selection is explicit at composition roots (`SyncEngineMode`), removing hidden env/query runtime toggles.
+- [x] Dashboard layout now handles unbounded web viewport height and keeps controls reachable with internal scrolling.

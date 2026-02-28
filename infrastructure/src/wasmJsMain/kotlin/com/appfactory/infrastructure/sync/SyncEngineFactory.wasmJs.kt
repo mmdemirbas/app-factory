@@ -2,4 +2,9 @@ package com.appfactory.infrastructure.sync
 
 import com.appfactory.domain.port.SyncEngine
 
-actual fun createPlatformSyncEngine(): SyncEngine = PowerSyncWebAdapter()
+actual fun createPlatformSyncEngine(mode: SyncEngineMode): SyncEngine = when (mode) {
+    SyncEngineMode.PowerSync -> PowerSyncWebAdapter()
+    is SyncEngineMode.BackendTransport -> BackendSyncEngine(
+        BackendSyncWasmTransport(baseUrl = mode.baseUrl)
+    )
+}

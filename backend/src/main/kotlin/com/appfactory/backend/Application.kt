@@ -18,8 +18,11 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.calllogging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.routing.routing
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import kotlinx.serialization.json.Json
 import org.koin.core.qualifier.named
 import org.koin.ktor.ext.getKoin
@@ -35,6 +38,14 @@ fun Application.module() {
     val koin = getKoin()
 
     install(CallLogging)
+    install(CORS) {
+        anyHost()
+        allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Post)
+        allowHeader(HttpHeaders.ContentType)
+        allowHeader(HttpHeaders.Accept)
+        allowNonSimpleContentTypes = true
+    }
     install(ContentNegotiation) {
         json(Json {
             prettyPrint = true

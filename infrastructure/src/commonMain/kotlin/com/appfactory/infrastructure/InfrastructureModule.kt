@@ -9,6 +9,7 @@ import com.appfactory.domain.port.SyncEngine
 import com.appfactory.infrastructure.auth.SupabaseAuthAdapter
 import com.appfactory.infrastructure.connectors.SqlDelightConnectorRegistry
 import com.appfactory.infrastructure.connectors.SupabaseConnectorRegistry
+import com.appfactory.infrastructure.sync.SyncEngineMode
 import com.appfactory.infrastructure.sync.createPlatformSyncEngine
 import com.appfactory.infrastructure.storage.local.DatabaseDriverFactory
 import com.appfactory.infrastructure.storage.local.SqlDelightAppSettingsRepository
@@ -45,7 +46,7 @@ object InfrastructureModule {
         }
 
         single<SyncEngine> {
-            createPlatformSyncEngine()
+            createPlatformSyncEngine(SyncEngineMode.PowerSync)
         }
 
         single<AppDatabase> {
