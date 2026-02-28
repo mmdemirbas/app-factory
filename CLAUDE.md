@@ -10,7 +10,7 @@ template for future apps. Read docs/architecture.md for the full design.
 3. Read docs/adr/ for the relevant ADR before touching any architectural concern
 
 ## Current phase
-Phase 3 complete. Starting Phase 4: Basic Core Features + Cloud persistence.
+Phase 4 complete. Starting Phase 5: Sync.
 See docs/architecture.md Section 14 for the phase plan.
 
 ## Module rules (hard gates — violations fail CI)

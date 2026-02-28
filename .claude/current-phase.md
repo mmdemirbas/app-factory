@@ -1,18 +1,17 @@
-# Current work: Phase 4 — Backend and central storage
+# Current work: Phase 5 — Sync
 
 ## Goal
-Implement Supabase Postgres schema, remote repository adapters, Ktor routes, and Supabase Auth.
+Implement PowerSync-based sync adapters and validate offline-first behavior end-to-end.
 
-## Definition of done for Phase 4
-- [ ] Supabase Postgres schema defined and migrations created.
-- [ ] Remote repository adapters implemented connecting to Supabase.
-- [ ] Ktor backend routes implemented for core entities.
-- [ ] Supabase Auth integration for user management.
-- [ ] Verified remote configuration from one device appears on another via backend sync.
+## Definition of done for Phase 5
+- [ ] `PowerSyncKotlinAdapter` implemented for Android/Desktop targets.
+- [ ] `PowerSyncWebAdapter` implemented for Wasm/Web target.
+- [ ] Sync status surfaced in UI and backend-facing diagnostics.
+- [ ] Offline write/read behavior verified, then synced when connectivity returns.
+- [ ] End-to-end sync flow validated across at least two clients.
 
-## What's already done (Phase 3)
-- SQLDelight schema mirrors established strictly in `domain/` for compile-time validation.
-- Authoritative PowerSync JSON schema maintained in `infrastructure/sync/schema/`.
-- `SqlDelightAppSettingsRepository`, `SqlDelightFeatureFlagRepository`, and `SqlDelightConnectorRegistry` local repository adapters implemented.
-- `AppDatabase` Driver Factories and Koin Dependency Injection bindings constructed.
-- `infrastructure` JVM testing validating SQL/Domain interoperability passes successfully.
+## Phase 4 completion snapshot
+- [x] Supabase-backed remote adapters added for settings, feature flags, connectors, and auth.
+- [x] Ktor routes added for auth/settings/feature flags/connectors.
+- [x] Backend DI wiring updated to expose remote adapters.
+- [x] Build/test baselines pass across backend and infrastructure modules.
