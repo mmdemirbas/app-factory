@@ -1,18 +1,18 @@
-# Current work: Phase 3 — Local persistence
+# Current work: Phase 4 — Backend and central storage
 
 ## Goal
-Implement SQLDelight schema stubs, local repository adapters, and wire everything up for local-only operation.
+Implement Supabase Postgres schema, remote repository adapters, Ktor routes, and Supabase Auth.
 
-## Definition of done for Phase 3
-- [ ] SQLDelight schema mirrors established (for compile-time validation) in `domain` or `infrastructure` as per ADR.
-- [ ] Local repository adapters implemented using SQLDelight (`infrastructure/storage/local/`).
-- [ ] Integration tests against local SQLite verifying persistence.
-- [ ] DI wiring configured to allow local-only operation by default.
-- [ ] App runs safely across platforms retaining offline data state.
+## Definition of done for Phase 4
+- [ ] Supabase Postgres schema defined and migrations created.
+- [ ] Remote repository adapters implemented connecting to Supabase.
+- [ ] Ktor backend routes implemented for core entities.
+- [ ] Supabase Auth integration for user management.
+- [ ] Verified remote configuration from one device appears on another via backend sync.
 
-## What's already done (Phase 2)
-- Domain entities (`AppSettings`, `FeatureFlag`, etc.) configured.
-- Port interfaces (`SyncEngine`, `AuthProvider`, `ConnectorRegistry`, `AppSettingsRepository`, etc.) established.
-- Fake implementations supplied for all ports.
-- App use cases implemented with 100% property-based testing.
-- ArchUnit verifications for 0 infrastructure dependencies remain unbroken.
+## What's already done (Phase 3)
+- SQLDelight schema mirrors established strictly in `domain/` for compile-time validation.
+- Authoritative PowerSync JSON schema maintained in `infrastructure/sync/schema/`.
+- `SqlDelightAppSettingsRepository`, `SqlDelightFeatureFlagRepository`, and `SqlDelightConnectorRegistry` local repository adapters implemented.
+- `AppDatabase` Driver Factories and Koin Dependency Injection bindings constructed.
+- `infrastructure` JVM testing validating SQL/Domain interoperability passes successfully.

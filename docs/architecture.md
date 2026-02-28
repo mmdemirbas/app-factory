@@ -766,7 +766,7 @@ Monorepo structure, Gradle convention plugins, version catalog, all module direc
 Meta/admin domain entities, all port interfaces, fakes for all ports, property-based tests, Kover and Pitest configured.
 *Deliverable:* Domain >90% coverage, <20% mutation survival. Zero infrastructure code.
 
-**Phase 3 — Local persistence**
+**Phase 3 — Local persistence (Done)**
 SQLDelight schema stubs, local repository adapters, integration tests against SQLite, DI wiring for local-only operation.
 *Deliverable:* App runs on all platforms. Config persists across restarts. No network required.
 
