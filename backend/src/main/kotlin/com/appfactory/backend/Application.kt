@@ -3,6 +3,7 @@ package com.appfactory.backend
 import com.appfactory.backend.auth.authRoutes
 import com.appfactory.backend.connectors.connectorRoutes
 import com.appfactory.backend.featureflags.featureFlagRoutes
+import com.appfactory.backend.sync.syncRoutes
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import com.appfactory.backend.health.healthRoutes
@@ -13,7 +14,6 @@ import io.ktor.server.plugins.calllogging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.routing.routing
-import com.appfactory.backend.health.healthRoutes
 import kotlinx.serialization.json.Json
 
 fun main() {
@@ -40,5 +40,6 @@ fun Application.module() {
         authRoutes()
         featureFlagRoutes()
         connectorRoutes()
+        syncRoutes()
     }
 }
