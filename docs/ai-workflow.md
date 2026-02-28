@@ -95,6 +95,8 @@ These are mistakes observed and corrected. Agents should check for these explici
 6. **Creating mutable shared state in a use case.** Use cases should be stateless.
    State lives in repositories (infrastructure) or ViewModels (clients).
 
+7. **Sharing `Fake*` classes across modules.** Due to Kotlin Multiplatform restrictions, `testFixtures` is unreliable for `commonMain`. Instead, `application/build.gradle.kts` natively maps `domain/src/commonTest/kotlin` and excludes `*Test.kt` files. Always name your test implementations starting with `Fake` and place them properly in `domain/src/commonTest/kotlin/.../fake/` so they successfully export to `application` tests.
+
 ---
 
 ## Architecture Decision Records

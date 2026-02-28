@@ -1,5 +1,6 @@
 package com.appfactory.domain.fake
 
+import com.appfactory.domain.common.DomainError
 import com.appfactory.domain.common.DomainResult
 import com.appfactory.domain.common.EntityId
 import com.appfactory.domain.common.Timestamp
@@ -14,6 +15,7 @@ import kotlinx.datetime.Clock
 
 class FakeAuthProvider : AuthProvider {
     var authResultOverride: AuthenticatedUser? = null
+    var authFailureOverride: DomainError? = null
     var refreshSessionResultOverride: DomainResult<Unit>? = null
     private val currentUserFlow = MutableStateFlow<AuthenticatedUser?>(null)
     
@@ -28,6 +30,8 @@ class FakeAuthProvider : AuthProvider {
 
     override suspend fun signIn(credentials: Credentials): DomainResult<AuthenticatedUser> {
         _signInCallCount++
+        
+        authFailureOverride?.let { return DomainResult.Failure(it) }
         
         val email = when (credentials) {
             is Credentials.EmailPassword -> credentials.email

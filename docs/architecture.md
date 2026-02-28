@@ -638,6 +638,8 @@ A `.spec.md` file is written before any agent begins a task:
 
 Every port interface has a `Fake*` in `domain/src/commonTest/kotlin/fake/`. All domain and application tests use fakes — no real DB, no network, fully deterministic.
 
+To allow the `application` module to access these fakes natively without executing the `domain` module's actual tests a second time during the build, `application/build.gradle.kts` uses a Gradle source directory mapping that filters out files ending in `Test.kt` or `Spec.kt`.
+
 ```kotlin
 class FakeConnectorRegistry : ConnectorRegistry {
     private val connectors = mutableMapOf<ConnectorId, ConfiguredConnector>()

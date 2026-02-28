@@ -33,3 +33,15 @@ extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtensio
 }
 
 tasks.withType<Test> { useJUnitPlatform() }
+
+tasks.withType<AbstractTestTask>().configureEach {
+    // Workaround for KMP Native test runners discovering test files but no runnable Kotest specs.
+    // Kotest is only configured for JVM in this repository.
+    try {
+        if (hasProperty("failOnNoDiscoveredTests")) {
+            setProperty("failOnNoDiscoveredTests", false)
+        }
+    } catch (e: Exception) {
+        // Ignore reflection failures
+    }
+}
