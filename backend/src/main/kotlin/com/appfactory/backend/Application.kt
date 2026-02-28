@@ -1,7 +1,12 @@
 package com.appfactory.backend
 
+import com.appfactory.backend.auth.authRoutes
+import com.appfactory.backend.connectors.connectorRoutes
+import com.appfactory.backend.featureflags.featureFlagRoutes
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
+import com.appfactory.backend.health.healthRoutes
+import com.appfactory.backend.routes.appSettingsRoutes
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.calllogging.CallLogging
@@ -18,6 +23,8 @@ fun main() {
 }
 
 fun Application.module() {
+    configureDependencyInjection()
+
     install(CallLogging)
     install(ContentNegotiation) {
         json(Json {
@@ -26,12 +33,12 @@ fun Application.module() {
             ignoreUnknownKeys = true
         })
     }
+
     routing {
         healthRoutes()
-        // Feature routes are registered here as phases progress:
-        // connectorRoutes(...)
-        // featureFlagRoutes(...)
-        // syncRoutes(...)
-        // authRoutes(...)
+        appSettingsRoutes()
+        authRoutes()
+        featureFlagRoutes()
+        connectorRoutes()
     }
 }

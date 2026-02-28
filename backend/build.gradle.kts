@@ -20,6 +20,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.koin.core)
+    implementation("io.insert-koin:koin-ktor:4.0.0")
 
     testImplementation(libs.ktor.server.test.host)
     testImplementation(kotlin("test"))

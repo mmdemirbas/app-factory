@@ -13,6 +13,10 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.serialization.json)
             implementation("com.benasher44:uuid:0.8.4") // KMP UUID library matching domain usage
+            implementation("io.github.jan-tennert.supabase:supabase-kt:3.1.2")
+            implementation("io.github.jan-tennert.supabase:auth-kt:3.1.2")
+            implementation("io.github.jan-tennert.supabase:postgrest-kt:3.1.2")
+            implementation("io.github.jan-tennert.supabase:realtime-kt:3.1.2")
         }
         
         androidMain.dependencies {
