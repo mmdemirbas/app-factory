@@ -60,14 +60,14 @@ activity-compose            = { module = "androidx.activity:activity-compose",  
 
 # ── Ktor Server ───────────────────────────────────────────
 ktor-server-core            = { module = "io.ktor:ktor-server-core-jvm",                         version.ref = "ktor" }
+ktor-server-test-host       = { module = "io.ktor:ktor-server-test-host-jvm",                    version.ref = "ktor" }
 ktor-server-netty           = { module = "io.ktor:ktor-server-netty-jvm",                        version.ref = "ktor" }
 ktor-server-content-neg     = { module = "io.ktor:ktor-server-content-negotiation-jvm",          version.ref = "ktor" }
 ktor-server-cors            = { module = "io.ktor:ktor-server-cors-jvm",                         version.ref = "ktor" }
 ktor-server-auth            = { module = "io.ktor:ktor-server-auth-jvm",                         version.ref = "ktor" }
 ktor-server-auth-jwt        = { module = "io.ktor:ktor-server-auth-jwt-jvm",                     version.ref = "ktor" }
 ktor-server-call-logging    = { module = "io.ktor:ktor-server-call-logging-jvm",                 version.ref = "ktor" }
-ktor-server-test-host       = { module = "io.ktor:ktor-server-test-host-jvm",                    version.ref = "ktor" }
-ktor-serialization-json     = { module = "io.ktor:ktor-serialization-kotlinx-json-jvm",          version.ref = "ktor" }
+ktor-serialization-json     = { module = "io.ktor:ktor-serialization-kotlinx-json",              version.ref = "ktor" }
 
 # ── Ktor Client (connectors) ──────────────────────────────
 ktor-client-core            = { module = "io.ktor:ktor-client-core",                             version.ref = "ktor" }

@@ -8,19 +8,19 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 
 class PowerSyncKotlinAdapterTest {
 
     @Test
-    fun observeSyncState_startsIdle() = runBlocking {
+    fun observeSyncState_startsIdle() = runTest {
         val adapter = PowerSyncKotlinAdapter()
         val state = adapter.observeSyncState(SyncScope.All).first()
         assertEquals(SyncState.Idle, state)
     }
 
     @Test
-    fun syncNow_online_returnsSuccessAndSyncedState() = runBlocking {
+    fun syncNow_online_returnsSuccessAndSyncedState() = runTest {
         val scope = SyncScope(entityType = "app_settings")
         val adapter = PowerSyncKotlinAdapter(isNetworkAvailable = { true })
 
@@ -35,7 +35,7 @@ class PowerSyncKotlinAdapterTest {
     }
 
     @Test
-    fun syncNow_offline_returnsFailureAndOfflineState() = runBlocking {
+    fun syncNow_offline_returnsFailureAndOfflineState() = runTest {
         val scope = SyncScope(entityType = "feature_flag")
         val adapter = PowerSyncKotlinAdapter(isNetworkAvailable = { false })
 
@@ -45,7 +45,7 @@ class PowerSyncKotlinAdapterTest {
     }
 
     @Test
-    fun syncNow_whenConnectivityReturns_flushesPreviouslyQueuedScope() = runBlocking {
+    fun syncNow_whenConnectivityReturns_flushesPreviouslyQueuedScope() = runTest {
         var online = false
         val scope = SyncScope(entityType = "feature_flag")
         val adapter = PowerSyncKotlinAdapter(isNetworkAvailable = { online })
@@ -64,7 +64,7 @@ class PowerSyncKotlinAdapterTest {
     }
 
     @Test
-    fun syncNow_online_flushesAllQueuedScopesInSingleCycle() = runBlocking {
+    fun syncNow_online_flushesAllQueuedScopesInSingleCycle() = runTest {
         var online = false
         val settingsScope = SyncScope(entityType = "app_settings")
         val flagsScope = SyncScope(entityType = "feature_flag")

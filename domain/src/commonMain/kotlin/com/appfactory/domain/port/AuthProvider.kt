@@ -54,4 +54,5 @@ enum class OAuthService {
     GOOGLE,
     GITHUB,
     MICROSOFT,
+    GOOGLE_SHEETS,
 }

@@ -10,13 +10,13 @@ import kotlin.test.assertTrue
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 
 class BackendSyncEngineTest {
 
     @Test
-    fun syncNow_success_mapsTransportSuccessToDomainSuccessAndSyncedState() = runBlocking {
+    fun syncNow_success_mapsTransportSuccessToDomainSuccessAndSyncedState() = runTest {
         val transport = FakeBackendSyncTransport(
             triggerResponse = BackendSyncTriggerResponse.Success(
                 scope = "feature_flag",
@@ -39,7 +39,7 @@ class BackendSyncEngineTest {
     }
 
     @Test
-    fun syncNow_failure_mapsTransportFailureToDomainFailureAndErrorState() = runBlocking {
+    fun syncNow_failure_mapsTransportFailureToDomainFailureAndErrorState() = runTest {
         val transport = FakeBackendSyncTransport(
             triggerResponse = BackendSyncTriggerResponse.Failure("backend unavailable"),
             observedState = SyncState.Idle,
@@ -56,7 +56,7 @@ class BackendSyncEngineTest {
     }
 
     @Test
-    fun observeSyncState_pollsBackendAndEmitsMappedStates() = runBlocking {
+    fun observeSyncState_pollsBackendAndEmitsMappedStates() = runTest {
         val transport = FakeBackendSyncTransport(
             triggerResponse = BackendSyncTriggerResponse.Success(SyncScope.All.entityType, 0, 0),
             observedState = SyncState.Syncing,

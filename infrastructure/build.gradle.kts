@@ -17,6 +17,9 @@ kotlin {
             implementation("io.github.jan-tennert.supabase:auth-kt:3.1.2")
             implementation("io.github.jan-tennert.supabase:postgrest-kt:3.1.2")
             implementation("io.github.jan-tennert.supabase:realtime-kt:3.1.2")
+            
+            // Ktor Client for Connectors (e.g., Google Sheets REST API)
+            implementation(libs.ktor.client.core)
         }
         
         androidMain.dependencies {
@@ -39,6 +42,7 @@ kotlin {
 
         commonTest.dependencies {
             implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }
