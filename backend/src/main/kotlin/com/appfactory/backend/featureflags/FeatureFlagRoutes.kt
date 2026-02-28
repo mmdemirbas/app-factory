@@ -10,7 +10,8 @@ import io.ktor.server.routing.route
 fun Route.featureFlagRoutes(featureFlagRepo: FeatureFlagRepository) {
     route("/api/feature-flags") {
         get {
-            val flags = featureFlagRepo.getAll()
+            val teamId = call.request.headers["X-Team-ID"]?.let { com.appfactory.domain.common.EntityId(it) } ?: com.appfactory.domain.common.EntityId("default_team")
+            val flags = featureFlagRepo.getAll(teamId)
             call.respond(HttpStatusCode.OK, flags)
         }
     }

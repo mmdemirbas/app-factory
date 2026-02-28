@@ -3,6 +3,7 @@ package com.appfactory.domain.fake
 import com.appfactory.domain.common.DomainResult
 import com.appfactory.domain.common.EntityId
 import com.appfactory.domain.common.Timestamp
+import com.appfactory.domain.model.TeamId
 import com.appfactory.domain.port.ConfiguredConnector
 import com.appfactory.domain.port.ConnectorConfig
 import com.appfactory.domain.port.ConnectorDescriptor
@@ -31,18 +32,20 @@ class FakeConnectorRegistry(
 
     override fun available(): List<ConnectorDescriptor> = availableConnectors
 
-    override fun configured(): List<ConfiguredConnector> = _configured.value.values.toList()
+    override fun configured(teamId: TeamId): List<ConfiguredConnector> = _configured.value.values.filter { it.teamId == teamId }
 
-    override fun observeConfigured(): Flow<List<ConfiguredConnector>> =
-        MutableStateFlow(_configured.value.values.toList()).asStateFlow()
+    override fun observeConfigured(teamId: TeamId): Flow<List<ConfiguredConnector>> =
+        MutableStateFlow(_configured.value.values.filter { it.teamId == teamId }).asStateFlow()
 
     override suspend fun configure(
+        teamId: TeamId,
         descriptor: ConnectorDescriptor,
         config: ConnectorConfig,
     ): DomainResult<ConfiguredConnector> {
         _configureCallCount++
         val connector = ConfiguredConnector(
             id = EntityId.generate(),
+            teamId = teamId,
             descriptor = descriptor,
             config = config,
             lastModifiedAt = Timestamp.now(),
@@ -51,13 +54,13 @@ class FakeConnectorRegistry(
         return DomainResult.success(connector)
     }
 
-    override suspend fun remove(connectorId: ConnectorId): DomainResult<Unit> {
+    override suspend fun remove(teamId: TeamId, connectorId: ConnectorId): DomainResult<Unit> {
         _removeCallCount++
         _configured.value = _configured.value - connectorId
         return DomainResult.success(Unit)
     }
 
-    override suspend fun test(connectorId: ConnectorId): DomainResult<TestResult> = _testResult
+    override suspend fun test(teamId: TeamId, connectorId: ConnectorId): DomainResult<TestResult> = _testResult
 
     fun setTestResult(result: DomainResult<TestResult>) {
         _testResult = result

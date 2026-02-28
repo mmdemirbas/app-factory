@@ -9,7 +9,7 @@ CREATE TABLE AppSettings (
 );
 
 getSettings:
-SELECT * FROM AppSettings LIMIT 1;
+SELECT * FROM AppSettings WHERE id = ? LIMIT 1;
 
 upsert:
 INSERT OR REPLACE INTO AppSettings(id, environment, is_auto_sync_enabled, updated_at)

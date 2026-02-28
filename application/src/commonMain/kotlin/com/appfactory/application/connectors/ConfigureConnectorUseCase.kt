@@ -7,6 +7,8 @@ import com.appfactory.domain.port.ConnectorDescriptor
 import com.appfactory.domain.port.ConnectorRegistry
 import com.appfactory.domain.port.OAuthProvider
 
+import com.appfactory.domain.model.TeamId
+
 /**
  * Use case: Configure a connector.
  *
@@ -21,6 +23,7 @@ class ConfigureConnectorUseCase(
     private val oauthProvider: OAuthProvider,
 ) {
     suspend operator fun invoke(
+        teamId: TeamId,
         descriptor: ConnectorDescriptor,
         config: ConnectorConfig,
     ): DomainResult<ConfiguredConnector> {
@@ -35,7 +38,7 @@ class ConfigureConnectorUseCase(
         }
 
         return when (val validation = configToSave.validate()) {
-            is DomainResult.Success -> registry.configure(descriptor, configToSave)
+            is DomainResult.Success -> registry.configure(teamId, descriptor, configToSave)
             is DomainResult.Failure -> validation
         }
     }

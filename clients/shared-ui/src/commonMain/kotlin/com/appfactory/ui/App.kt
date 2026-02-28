@@ -27,6 +27,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.appfactory.application.sync.ObserveSyncStateUseCase
 import com.appfactory.application.sync.TriggerSyncUseCase
+import com.appfactory.application.teams.ObserveActiveTeamUseCase
+import com.appfactory.application.teams.SwitchActiveTeamUseCase
+import com.appfactory.domain.model.TeamId
+import com.appfactory.domain.port.ActiveTeamRepository
 import com.appfactory.domain.common.DomainResult
 import com.appfactory.domain.port.SyncEngine
 import com.appfactory.domain.port.SyncResult
@@ -45,11 +49,19 @@ import kotlinx.coroutines.launch
  * Platform entry points (android/desktop/web) call this function.
  */
 @Composable
-fun App(syncEngine: SyncEngine = PreviewSyncEngine) {
+fun App(
+    syncEngine: SyncEngine = PreviewSyncEngine,
+    activeTeamRepository: ActiveTeamRepository = PreviewActiveTeamRepository,
+) {
     val scope = remember { SyncScope.All }
     val observeSyncState = remember(syncEngine) { ObserveSyncStateUseCase(syncEngine) }
     val triggerSync = remember(syncEngine) { TriggerSyncUseCase(syncEngine) }
+    val observeActiveTeam = remember(activeTeamRepository) { ObserveActiveTeamUseCase(activeTeamRepository) }
+    val switchActiveTeam = remember(activeTeamRepository) { SwitchActiveTeamUseCase(activeTeamRepository) }
+
     val syncState by observeSyncState(scope).collectAsState(initial = SyncState.Idle)
+    val activeTeamId by observeActiveTeam().collectAsState(initial = null)
+
     var lastSyncResult by remember { mutableStateOf<SyncResult?>(null) }
     var lastError by remember { mutableStateOf<String?>(null) }
     val coroutineScope = rememberCoroutineScope()
@@ -109,6 +121,29 @@ fun App(syncEngine: SyncEngine = PreviewSyncEngine) {
                     }
                     Spacer(modifier = Modifier.height(if (layoutMode == DashboardLayoutMode.Compact) 12.dp else 20.dp))
                 }
+
+                Card {
+                    Column(
+                        modifier = Modifier.padding(cardPadding),
+                        verticalArrangement = Arrangement.spacedBy(cardSpacing),
+                    ) {
+                        Text(
+                            text = "Active Team: ${activeTeamId?.value ?: "None"}",
+                            fontWeight = FontWeight.Bold,
+                        )
+                        androidx.compose.foundation.layout.Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            listOf("Team Alpha", "Team Beta", "Team Charlie").forEach { teamName ->
+                                Button(onClick = { switchActiveTeam(com.appfactory.domain.common.EntityId(teamName)) }) {
+                                    Text(teamName)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Card {
                     Column(
@@ -186,4 +221,16 @@ private object PreviewSyncEngine : SyncEngine {
     }
 
     override fun observeSyncState(scope: SyncScope): Flow<SyncState> = state.asStateFlow()
+}
+
+private object PreviewActiveTeamRepository : ActiveTeamRepository {
+    private val state = MutableStateFlow<TeamId?>(com.appfactory.domain.common.EntityId("default_team"))
+
+    override fun setActiveTeam(teamId: TeamId) {
+        state.value = teamId
+    }
+
+    override fun observeActiveTeam(): Flow<TeamId?> = state.asStateFlow()
+
+    override suspend fun getActiveTeam(): TeamId? = state.value
 }

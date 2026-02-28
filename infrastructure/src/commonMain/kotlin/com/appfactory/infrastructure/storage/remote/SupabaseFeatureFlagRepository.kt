@@ -5,6 +5,7 @@ import com.appfactory.domain.common.DomainResult
 import com.appfactory.domain.common.EntityId
 import com.appfactory.domain.common.Timestamp
 import com.appfactory.domain.model.FeatureFlag
+import com.appfactory.domain.model.TeamId
 import com.appfactory.domain.port.FeatureFlagRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
@@ -18,29 +19,32 @@ import kotlinx.serialization.Serializable
 class SupabaseFeatureFlagRepository(
     private val supabaseClient: SupabaseClient,
 ) : FeatureFlagRepository {
-    override suspend fun getAll(): List<FeatureFlag> {
+    override suspend fun getAll(teamId: TeamId): List<FeatureFlag> {
         return try {
-            val result = supabaseClient.from("feature_flag").select()
-            result.decodeList<FeatureFlagDto>().map { it.toDomain() }
+            val result = supabaseClient.from("feature_flag").select {
+                filter { eq("team_id", teamId.value) }
+            }
+            result.decodeList<FeatureFlagDto>().map { it.toDomain(teamId) }
         } catch (_: Exception) {
             emptyList()
         }
     }
 
-    override suspend fun getById(id: EntityId): FeatureFlag? {
-        return getAll().firstOrNull { it.id == id }
+    override suspend fun getById(teamId: TeamId, id: EntityId): FeatureFlag? {
+        return getAll(teamId).firstOrNull { it.id == id }
     }
 
-    override suspend fun getByKey(key: String): FeatureFlag? {
-        return getAll().firstOrNull { it.key == key }
+    override suspend fun getByKey(teamId: TeamId, key: String): FeatureFlag? {
+        return getAll(teamId).firstOrNull { it.key == key }
     }
 
-    override fun observeAll(): Flow<List<FeatureFlag>> = emptyFlow()
+    override fun observeAll(teamId: TeamId): Flow<List<FeatureFlag>> = emptyFlow()
 
-    override suspend fun save(flag: FeatureFlag): DomainResult<FeatureFlag> {
+    override suspend fun save(teamId: TeamId, flag: FeatureFlag): DomainResult<FeatureFlag> {
         return try {
             val payload = FeatureFlagDto(
                 id = flag.id.value,
+                teamId = teamId.value,
                 name = flag.key,
                 description = flag.description,
                 isEnabled = if (flag.defaultEnabled) 1 else 0,
@@ -51,7 +55,7 @@ class SupabaseFeatureFlagRepository(
                 onConflict = "id"
             }
 
-            DomainResult.success(flag)
+            DomainResult.success(flag.copy(teamId = teamId))
         } catch (e: Exception) {
             DomainResult.failure(
                 DomainError.ExternalServiceError(e.message ?: "Failed to save flag")
@@ -59,11 +63,12 @@ class SupabaseFeatureFlagRepository(
         }
     }
 
-    override suspend fun delete(id: EntityId): DomainResult<Unit> {
+    override suspend fun delete(teamId: TeamId, id: EntityId): DomainResult<Unit> {
         return try {
             supabaseClient.from("feature_flag").delete {
                 filter {
                     eq("id", id.value)
+                    eq("team_id", teamId.value)
                 }
             }
             DomainResult.success(Unit)
@@ -87,12 +92,13 @@ private data class FeatureFlagDto(
     val isEnabled: Int,
     @SerialName("updated_at")
     val updatedAt: Long,
-    @SerialName("user_id")
-    val userId: String? = null,
+    @SerialName("team_id")
+    val teamId: String,
 )
 
-private fun FeatureFlagDto.toDomain(): FeatureFlag = FeatureFlag(
+private fun FeatureFlagDto.toDomain(teamId: TeamId): FeatureFlag = FeatureFlag(
     id = EntityId.of(id),
+    teamId = teamId,
     key = name,
     description = description,
     defaultEnabled = isEnabled == 1,

@@ -4,6 +4,8 @@ import com.appfactory.domain.port.ConfiguredConnector
 import com.appfactory.domain.port.ConnectorDescriptor
 import com.appfactory.domain.port.ConnectorRegistry
 
+import com.appfactory.domain.model.TeamId
+
 class GetConnectorsUseCase(
     private val registry: ConnectorRegistry
 ) {
@@ -11,7 +13,7 @@ class GetConnectorsUseCase(
         return registry.available()
     }
 
-    fun configured(): List<ConfiguredConnector> {
-        return registry.configured()
+    fun configured(teamId: TeamId): List<ConfiguredConnector> {
+        return registry.configured(teamId)
     }
 }

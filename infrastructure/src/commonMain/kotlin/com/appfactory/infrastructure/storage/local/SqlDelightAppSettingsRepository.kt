@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
+import com.appfactory.domain.model.TeamId
 
 class SqlDelightAppSettingsRepository(
     db: AppDatabase,
@@ -22,27 +23,27 @@ class SqlDelightAppSettingsRepository(
     
     // We expect AppSettings.sq to generate AppSettingsQueries
     private val queries = db.appSettingsQueries
-    private val defaultId = "singleton_settings"
 
-    override suspend fun getSettings(): DomainResult<AppSettings> = withContext(ioDispatcher) {
-        val result = queries.getSettings().executeAsOneOrNull()
+    override suspend fun getSettings(teamId: TeamId): DomainResult<AppSettings> = withContext(ioDispatcher) {
+        val result = queries.getSettings(teamId.value).executeAsOneOrNull()
         if (result != null) {
             DomainResult.success(
                 AppSettings(
+                    teamId = teamId,
                     environment = result.environment.toDomainEnvironment(),
                     isAutoSyncEnabled = result.is_auto_sync_enabled == 1L
                 )
             )
         } else {
             // Offline-first default when local DB has not been initialized yet.
-            DomainResult.success(AppSettings())
+            DomainResult.success(AppSettings(teamId = teamId))
         }
     }
 
-    override suspend fun updateSettings(settings: AppSettings): DomainResult<Unit> = withContext(ioDispatcher) {
+    override suspend fun updateSettings(teamId: TeamId, settings: AppSettings): DomainResult<Unit> = withContext(ioDispatcher) {
         try {
             queries.upsert(
-                id = defaultId,
+                id = teamId.value,
                 environment = settings.environment.name,
                 is_auto_sync_enabled = if (settings.isAutoSyncEnabled) 1L else 0L,
                 updated_at = Clock.System.now().toEpochMilliseconds()
@@ -53,18 +54,19 @@ class SqlDelightAppSettingsRepository(
         }
     }
 
-    override fun observeSettings(): Flow<AppSettings> {
-        return queries.getSettings()
+    override fun observeSettings(teamId: TeamId): Flow<AppSettings> {
+        return queries.getSettings(teamId.value)
             .asFlow()
             .mapToOneOrNull(ioDispatcher)
             .map { entity ->
                 if (entity != null) {
                     AppSettings(
+                        teamId = teamId,
                         environment = entity.environment.toDomainEnvironment(),
                         isAutoSyncEnabled = entity.is_auto_sync_enabled == 1L
                     )
                 } else {
-                    AppSettings()
+                    AppSettings(teamId = teamId)
                 }
             }
     }

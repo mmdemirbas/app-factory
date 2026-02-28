@@ -17,6 +17,8 @@ import com.appfactory.infrastructure.sync.createPlatformSyncEngine
 import com.appfactory.infrastructure.storage.local.DatabaseDriverFactory
 import com.appfactory.infrastructure.storage.local.SqlDelightAppSettingsRepository
 import com.appfactory.infrastructure.storage.local.SqlDelightFeatureFlagRepository
+import com.appfactory.infrastructure.storage.local.InMemoryActiveTeamRepository
+import com.appfactory.domain.port.ActiveTeamRepository
 import com.appfactory.infrastructure.storage.remote.SupabaseAppSettingsRepository
 import com.appfactory.infrastructure.storage.remote.SupabaseFeatureFlagRepository
 import io.github.jan.supabase.SupabaseClient
@@ -72,6 +74,10 @@ object InfrastructureModule {
 
         single<SyncEngine> {
             createPlatformSyncEngine(SyncEngineMode.PowerSync)
+        }
+
+        single<ActiveTeamRepository> {
+            InMemoryActiveTeamRepository()
         }
 
         single<AppDatabase> {

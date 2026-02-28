@@ -3,6 +3,7 @@
 -- Keep this file in sync with the PowerSync schema definition.
 CREATE TABLE FeatureFlag (
     id TEXT NOT NULL PRIMARY KEY,
+    team_id TEXT NOT NULL,
     key TEXT NOT NULL,
     description TEXT NOT NULL,
     default_enabled INTEGER NOT NULL DEFAULT 0,
@@ -11,14 +12,14 @@ CREATE TABLE FeatureFlag (
 );
 
 selectAll:
-SELECT * FROM FeatureFlag ORDER BY updated_at DESC;
+SELECT * FROM FeatureFlag WHERE team_id = ? ORDER BY updated_at DESC;
 
 selectById:
-SELECT * FROM FeatureFlag WHERE id = ?;
+SELECT * FROM FeatureFlag WHERE id = ? AND team_id = ?;
 
 upsert:
-INSERT OR REPLACE INTO FeatureFlag(id, key, description, default_enabled, created_at, updated_at)
-VALUES (?, ?, ?, ?, ?, ?);
+INSERT OR REPLACE INTO FeatureFlag(id, team_id, key, description, default_enabled, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?);
 
 deleteById:
-DELETE FROM FeatureFlag WHERE id = ?;
+DELETE FROM FeatureFlag WHERE id = ? AND team_id = ?;

@@ -4,6 +4,7 @@ import com.appfactory.domain.common.DomainError
 import com.appfactory.domain.common.DomainResult
 import com.appfactory.domain.common.EntityId
 import com.appfactory.domain.common.Timestamp
+import com.appfactory.domain.model.TeamId
 import kotlinx.serialization.Serializable
 
 /**
@@ -18,6 +19,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class FeatureFlag(
     val id: EntityId,
+    val teamId: TeamId,
     val key: String,
     val description: String,
     val defaultEnabled: Boolean,
@@ -30,6 +32,7 @@ data class FeatureFlag(
 
     companion object {
         fun create(
+            teamId: TeamId,
             key: String,
             description: String,
             defaultEnabled: Boolean = false,
@@ -50,6 +53,7 @@ data class FeatureFlag(
             return DomainResult.success(
                 FeatureFlag(
                     id = EntityId.generate(),
+                    teamId = teamId,
                     key = key,
                     description = description,
                     defaultEnabled = defaultEnabled,

@@ -4,6 +4,7 @@ import com.appfactory.domain.common.DomainError
 import com.appfactory.domain.common.DomainResult
 import com.appfactory.domain.model.AppEnvironment
 import com.appfactory.domain.model.AppSettings
+import com.appfactory.domain.model.TeamId
 import com.appfactory.domain.port.AppSettingsRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
@@ -18,9 +19,11 @@ class SupabaseAppSettingsRepository(
 ) : AppSettingsRepository {
     private val settingsId = "singleton_settings"
 
-    override suspend fun getSettings(): DomainResult<AppSettings> {
+    override suspend fun getSettings(teamId: TeamId): DomainResult<AppSettings> {
         return try {
-            val result = supabaseClient.from("app_settings").select()
+            val result = supabaseClient.from("app_settings").select {
+                filter { eq("id", teamId.value) }
+            }
             val dto = result.decodeList<AppSettingsDto>().firstOrNull()
 
             if (dto != null) {
@@ -30,12 +33,13 @@ class SupabaseAppSettingsRepository(
 
                 DomainResult.success(
                     AppSettings(
+                        teamId = teamId,
                         environment = environment,
                         isAutoSyncEnabled = dto.isAutoSyncEnabled == 1,
                     )
                 )
             } else {
-                DomainResult.success(AppSettings())
+                DomainResult.success(AppSettings(teamId = teamId))
             }
         } catch (e: Exception) {
             DomainResult.failure(
@@ -46,10 +50,11 @@ class SupabaseAppSettingsRepository(
         }
     }
 
-    override suspend fun updateSettings(settings: AppSettings): DomainResult<Unit> {
+    override suspend fun updateSettings(teamId: TeamId, settings: AppSettings): DomainResult<Unit> {
         return try {
             val payload = AppSettingsDto(
-                id = settingsId,
+                id = teamId.value,
+                teamId = teamId.value,
                 environment = settings.environment.name,
                 isAutoSyncEnabled = if (settings.isAutoSyncEnabled) 1 else 0,
                 updatedAt = Clock.System.now().toEpochMilliseconds(),
@@ -69,7 +74,7 @@ class SupabaseAppSettingsRepository(
         }
     }
 
-    override fun observeSettings(): Flow<AppSettings> = emptyFlow()
+    override fun observeSettings(teamId: TeamId): Flow<AppSettings> = emptyFlow()
 
     override suspend fun clearLocalDb(): DomainResult<Unit> = DomainResult.failure(
         DomainError.Unknown("clearLocalDb is not supported on Remote repository")
@@ -90,6 +95,6 @@ private data class AppSettingsDto(
     val isAutoSyncEnabled: Int,
     @SerialName("updated_at")
     val updatedAt: Long,
-    @SerialName("user_id")
-    val userId: String? = null,
+    @SerialName("team_id")
+    val teamId: String,
 )

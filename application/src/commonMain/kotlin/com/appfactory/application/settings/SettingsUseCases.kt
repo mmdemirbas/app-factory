@@ -5,27 +5,29 @@ import com.appfactory.domain.model.AppSettings
 import com.appfactory.domain.port.AppSettingsRepository
 import kotlinx.coroutines.flow.Flow
 
+import com.appfactory.domain.model.TeamId
+
 class GetSettingsUseCase(
     private val repository: AppSettingsRepository
 ) {
-    suspend operator fun invoke(): DomainResult<AppSettings> {
-        return repository.getSettings()
+    suspend operator fun invoke(teamId: TeamId): DomainResult<AppSettings> {
+        return repository.getSettings(teamId)
     }
 }
 
 class UpdateSettingsUseCase(
     private val repository: AppSettingsRepository
 ) {
-    suspend operator fun invoke(settings: AppSettings): DomainResult<Unit> {
-        return repository.updateSettings(settings)
+    suspend operator fun invoke(teamId: TeamId, settings: AppSettings): DomainResult<Unit> {
+        return repository.updateSettings(teamId, settings)
     }
 }
 
 class ObserveSettingsUseCase(
     private val repository: AppSettingsRepository
 ) {
-    operator fun invoke(): Flow<AppSettings> {
-        return repository.observeSettings()
+    operator fun invoke(teamId: TeamId): Flow<AppSettings> {
+        return repository.observeSettings(teamId)
     }
 }
 

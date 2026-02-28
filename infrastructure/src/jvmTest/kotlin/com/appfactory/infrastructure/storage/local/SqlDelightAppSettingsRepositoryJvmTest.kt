@@ -10,40 +10,43 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import com.appfactory.domain.model.TeamId
 
 class SqlDelightAppSettingsRepositoryJvmTest {
+    private val mockTeamId = TeamId.generate()
 
     @Test
     fun getSettings_whenLocalDbIsEmpty_returnsDefaultSettings() = runBlocking {
         val repository = testRepository()
 
-        val result = repository.getSettings()
+        val result = repository.getSettings(mockTeamId)
 
         assertTrue(result is DomainResult.Success<AppSettings>)
-        assertEquals(AppSettings(), (result as DomainResult.Success).value)
+        assertEquals(AppSettings(teamId = mockTeamId), (result as DomainResult.Success).value)
     }
 
     @Test
     fun observeSettings_whenLocalDbIsEmpty_emitsDefaultSettings() = runBlocking {
         val repository = testRepository()
 
-        val observed = repository.observeSettings().first()
+        val observed = repository.observeSettings(mockTeamId).first()
 
-        assertEquals(AppSettings(), observed)
+        assertEquals(AppSettings(teamId = mockTeamId), observed)
     }
 
     @Test
     fun updateSettings_thenGetSettings_returnsPersistedLocalValues() = runBlocking {
         val repository = testRepository()
         val updated = AppSettings(
+            teamId = mockTeamId,
             environment = AppEnvironment.STAGING,
             isAutoSyncEnabled = false,
         )
 
-        val writeResult = repository.updateSettings(updated)
+        val writeResult = repository.updateSettings(mockTeamId, updated)
         assertTrue(writeResult is DomainResult.Success<Unit>)
 
-        val getResult = repository.getSettings()
+        val getResult = repository.getSettings(mockTeamId)
         assertTrue(getResult is DomainResult.Success<AppSettings>)
         assertEquals(updated, (getResult as DomainResult.Success).value)
     }

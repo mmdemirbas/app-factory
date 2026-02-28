@@ -12,6 +12,7 @@ import com.appfactory.domain.port.ConnectorDescriptor
 import com.appfactory.domain.port.ConnectorId
 import com.appfactory.domain.port.ConnectorRegistry
 import com.appfactory.domain.port.ConnectorStatus
+import com.appfactory.domain.model.TeamId
 import com.appfactory.domain.port.SyncSchedule
 import com.appfactory.domain.port.TestResult
 import kotlinx.coroutines.CoroutineDispatcher
@@ -37,10 +38,11 @@ class SqlDelightConnectorRegistry(
 
     override fun available(): List<ConnectorDescriptor> = availableDescriptors
 
-    override fun configured(): List<ConfiguredConnector> {
-        return queries.selectAll().executeAsList().mapNotNull { entity ->
+    override fun configured(teamId: TeamId): List<ConfiguredConnector> {
+        return queries.selectAll(teamId.value).executeAsList().mapNotNull { entity ->
             mapToDomain(
                 id = entity.id,
+                teamId = teamId,
                 descriptorId = entity.descriptor_id,
                 configJson = entity.config_json,
                 updatedAt = entity.updated_at
@@ -48,14 +50,15 @@ class SqlDelightConnectorRegistry(
         }
     }
 
-    override fun observeConfigured(): Flow<List<ConfiguredConnector>> {
-        return queries.selectAll()
+    override fun observeConfigured(teamId: TeamId): Flow<List<ConfiguredConnector>> {
+        return queries.selectAll(teamId.value)
             .asFlow()
             .mapToList(ioDispatcher)
             .map { list ->
                 list.mapNotNull { entity ->
                     mapToDomain(
                         id = entity.id,
+                        teamId = teamId,
                         descriptorId = entity.descriptor_id,
                         configJson = entity.config_json,
                         updatedAt = entity.updated_at
@@ -65,6 +68,7 @@ class SqlDelightConnectorRegistry(
     }
 
     override suspend fun configure(
+        teamId: TeamId,
         descriptor: ConnectorDescriptor,
         config: ConnectorConfig
     ): DomainResult<ConfiguredConnector> = withContext(ioDispatcher) {
@@ -92,6 +96,7 @@ class SqlDelightConnectorRegistry(
             
             queries.upsert(
                 id = entityId,
+                team_id = teamId.value,
                 descriptor_id = descriptor.id.value,
                 config_json = configJson,
                 updated_at = nowTime
@@ -100,6 +105,7 @@ class SqlDelightConnectorRegistry(
             DomainResult.success(
                 ConfiguredConnector(
                     id = EntityId(entityId),
+                    teamId = teamId,
                     descriptor = descriptor,
                     config = config.copy(connectorId = config.connectorId),
                     lastModifiedAt = Timestamp(kotlinx.datetime.Instant.fromEpochMilliseconds(nowTime))
@@ -110,23 +116,23 @@ class SqlDelightConnectorRegistry(
         }
     }
 
-    override suspend fun remove(connectorId: ConnectorId): DomainResult<Unit> = withContext(ioDispatcher) {
+    override suspend fun remove(teamId: TeamId, connectorId: ConnectorId): DomainResult<Unit> = withContext(ioDispatcher) {
         // Here, connectorId from the domain maps loosely to our stored ID 
         // We will remove by the primary assigned ID
         try {
-            queries.deleteById(connectorId.value)
+            queries.deleteById(connectorId.value, teamId.value)
             DomainResult.success(Unit)
         } catch(e: Exception) {
              DomainResult.failure(com.appfactory.domain.common.DomainError.Unknown(e.message ?: "Failed to remove connector"))
         }
     }
 
-    override suspend fun test(connectorId: ConnectorId): DomainResult<TestResult> = withContext(ioDispatcher) {
+    override suspend fun test(teamId: TeamId, connectorId: ConnectorId): DomainResult<TestResult> = withContext(ioDispatcher) {
         DomainResult.success(TestResult(success = true, message = "Database mapping mock test successful"))
     }
     
     // Helper to join SQLite row back to Domain entity
-    private fun mapToDomain(id: String, descriptorId: String, configJson: String, updatedAt: Long): ConfiguredConnector? {
+    private fun mapToDomain(id: String, teamId: TeamId, descriptorId: String, configJson: String, updatedAt: Long): ConfiguredConnector? {
         val descriptor = availableDescriptors.find { it.id.value == descriptorId } ?: return null
         
         val configData: ConnectorConfigData = try {
@@ -145,6 +151,7 @@ class SqlDelightConnectorRegistry(
         
         return ConfiguredConnector(
             id = EntityId(id),
+            teamId = teamId,
             descriptor = descriptor,
             config = ConnectorConfig(
                connectorId = ConnectorId(id),

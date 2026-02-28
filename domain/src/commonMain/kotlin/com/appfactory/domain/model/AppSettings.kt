@@ -4,6 +4,7 @@ import com.appfactory.domain.common.DomainError
 import com.appfactory.domain.common.DomainResult
 
 data class AppSettings(
+    val teamId: TeamId,
     val environment: AppEnvironment = AppEnvironment.PRODUCTION,
     val isAutoSyncEnabled: Boolean = true
 ) {

@@ -9,6 +9,7 @@ import com.appfactory.domain.port.ConnectorConfig
 import com.appfactory.domain.port.ConnectorDescriptor
 import com.appfactory.domain.port.ConnectorRegistry
 import com.appfactory.domain.port.ConnectorStatus
+import com.appfactory.domain.model.TeamId
 import com.appfactory.domain.port.TestResult
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
@@ -28,20 +29,23 @@ class SupabaseConnectorRegistry(
 ) : ConnectorRegistry {
     override fun available(): List<ConnectorDescriptor> = availableConnectors
 
-    override fun configured(): List<ConfiguredConnector> = emptyList()
+    override fun configured(teamId: TeamId): List<ConfiguredConnector> = emptyList()
 
-    suspend fun fetchConfigured(): List<ConfiguredConnector> {
+    suspend fun fetchConfigured(teamId: TeamId): List<ConfiguredConnector> {
         return try {
-            val result = supabaseClient.from("configured_connector").select()
-            result.decodeList<ConfiguredConnectorDto>().mapNotNull { mapToDomain(it) }
+            val result = supabaseClient.from("configured_connector").select {
+                filter { eq("team_id", teamId.value) }
+            }
+            result.decodeList<ConfiguredConnectorDto>().mapNotNull { mapToDomain(teamId, it) }
         } catch (_: Exception) {
             emptyList()
         }
     }
 
-    override fun observeConfigured(): Flow<List<ConfiguredConnector>> = emptyFlow()
+    override fun observeConfigured(teamId: TeamId): Flow<List<ConfiguredConnector>> = emptyFlow()
 
     override suspend fun configure(
+        teamId: TeamId,
         descriptor: ConnectorDescriptor,
         config: ConnectorConfig,
     ): DomainResult<ConfiguredConnector> {
@@ -53,6 +57,7 @@ class SupabaseConnectorRegistry(
 
             val payload = ConfiguredConnectorDto(
                 id = "conn_${descriptor.id.value}",
+                teamId = teamId.value,
                 descriptorId = descriptor.id.value,
                 configJson = json.encodeToString(serializedConfig),
                 updatedAt = Clock.System.now().toEpochMilliseconds(),
@@ -60,7 +65,7 @@ class SupabaseConnectorRegistry(
 
             supabaseClient.from("configured_connector").upsert(payload)
 
-            mapToDomain(payload)?.let { DomainResult.success(it) }
+            mapToDomain(teamId, payload)?.let { DomainResult.success(it) }
                 ?: DomainResult.failure(
                     DomainError.Unknown("Failed parsing domain model post-upsert")
                 )
@@ -73,11 +78,12 @@ class SupabaseConnectorRegistry(
         }
     }
 
-    override suspend fun remove(connectorId: com.appfactory.domain.port.ConnectorId): DomainResult<Unit> {
+    override suspend fun remove(teamId: TeamId, connectorId: com.appfactory.domain.port.ConnectorId): DomainResult<Unit> {
         return try {
             supabaseClient.from("configured_connector").delete {
                 filter {
                     eq("descriptor_id", connectorId.value)
+                    eq("team_id", teamId.value)
                 }
             }
             DomainResult.success(Unit)
@@ -90,7 +96,7 @@ class SupabaseConnectorRegistry(
         }
     }
 
-    override suspend fun test(connectorId: com.appfactory.domain.port.ConnectorId): DomainResult<TestResult> {
+    override suspend fun test(teamId: TeamId, connectorId: com.appfactory.domain.port.ConnectorId): DomainResult<TestResult> {
         return DomainResult.failure(
             DomainError.Unknown(
                 "Test execution is handled by core network components, not Remote registry storage"
@@ -98,7 +104,7 @@ class SupabaseConnectorRegistry(
         )
     }
 
-    private fun mapToDomain(dto: ConfiguredConnectorDto): ConfiguredConnector? {
+    private fun mapToDomain(teamId: TeamId, dto: ConfiguredConnectorDto): ConfiguredConnector? {
         val descriptor = availableConnectors.firstOrNull { it.id.value == dto.descriptorId } ?: return null
 
         return try {
@@ -111,6 +117,7 @@ class SupabaseConnectorRegistry(
 
             ConfiguredConnector(
                 id = EntityId.of(dto.id),
+                teamId = teamId,
                 descriptor = descriptor,
                 config = connectorConfig,
                 lastModifiedAt = Timestamp(Instant.fromEpochMilliseconds(dto.updatedAt)),
@@ -132,8 +139,8 @@ private data class ConfiguredConnectorDto(
     val configJson: String,
     @SerialName("updated_at")
     val updatedAt: Long,
-    @SerialName("user_id")
-    val userId: String? = null,
+    @SerialName("team_id")
+    val teamId: String,
 )
 
 @Serializable

@@ -3,6 +3,7 @@ package com.appfactory.domain.port
 import com.appfactory.domain.common.DomainResult
 import com.appfactory.domain.common.EntityId
 import com.appfactory.domain.common.Timestamp
+import com.appfactory.domain.model.TeamId
 import kotlin.jvm.JvmInline
 import kotlinx.coroutines.flow.Flow
 
@@ -19,23 +20,24 @@ interface ConnectorRegistry {
     /** All connectors this build supports, configured or not. */
     fun available(): List<ConnectorDescriptor>
 
-    /** Only connectors that have been configured by the user. */
-    fun configured(): List<ConfiguredConnector>
+    /** Only connectors that have been configured by the user internally. */
+    fun configured(teamId: TeamId): List<ConfiguredConnector>
 
     /** Observe live updates to configured connectors. */
-    fun observeConfigured(): Flow<List<ConfiguredConnector>>
+    fun observeConfigured(teamId: TeamId): Flow<List<ConfiguredConnector>>
 
     /** Persist a connector's configuration (credentials, field mappings, schedule). */
     suspend fun configure(
+        teamId: TeamId,
         descriptor: ConnectorDescriptor,
         config: ConnectorConfig,
     ): DomainResult<ConfiguredConnector>
 
     /** Remove a connector configuration. Does not revoke OAuth tokens. */
-    suspend fun remove(connectorId: ConnectorId): DomainResult<Unit>
+    suspend fun remove(teamId: TeamId, connectorId: ConnectorId): DomainResult<Unit>
 
     /** Test whether a configured connector can reach its external system. */
-    suspend fun test(connectorId: ConnectorId): DomainResult<TestResult>
+    suspend fun test(teamId: TeamId, connectorId: ConnectorId): DomainResult<TestResult>
 }
 
 @JvmInline
@@ -81,6 +83,7 @@ sealed class SyncSchedule {
 
 data class ConfiguredConnector(
     val id: EntityId,
+    val teamId: TeamId,
     val descriptor: ConnectorDescriptor,
     val config: ConnectorConfig,
     val lastModifiedAt: Timestamp,
