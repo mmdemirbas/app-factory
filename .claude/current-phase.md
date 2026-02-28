@@ -4,8 +4,8 @@
 Implement PowerSync-based sync adapters and validate offline-first behavior end-to-end.
 
 ## Definition of done for Phase 5
-- [ ] `PowerSyncKotlinAdapter` implemented for Android/Desktop targets.
-- [ ] `PowerSyncWebAdapter` implemented for Wasm/Web target.
+- [x] `PowerSyncKotlinAdapter` implemented for Android/Desktop targets.
+- [x] `PowerSyncWebAdapter` implemented for Wasm/Web target.
 - [ ] Sync status surfaced in UI and backend-facing diagnostics.
 - [ ] Offline write/read behavior verified, then synced when connectivity returns.
 - [ ] End-to-end sync flow validated across at least two clients.

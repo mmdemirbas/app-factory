@@ -35,7 +35,11 @@ interface SyncEngine {
 data class SyncScope(
     val entityType: String,
     val filter: SyncFilter? = null,
-)
+) {
+    companion object {
+        val All = SyncScope(entityType = "*")
+    }
+}
 
 data class SyncFilter(val field: String, val value: String)
 

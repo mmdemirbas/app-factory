@@ -36,6 +36,10 @@ kotlin {
             implementation(libs.sqldelight.web.driver)
             implementation(libs.kotlinx.browser)
         }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
     }
 }
 

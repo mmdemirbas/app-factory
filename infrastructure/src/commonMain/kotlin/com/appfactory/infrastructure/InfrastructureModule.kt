@@ -5,9 +5,11 @@ import com.appfactory.domain.port.AppSettingsRepository
 import com.appfactory.domain.port.AuthProvider
 import com.appfactory.domain.port.ConnectorRegistry
 import com.appfactory.domain.port.FeatureFlagRepository
+import com.appfactory.domain.port.SyncEngine
 import com.appfactory.infrastructure.auth.SupabaseAuthAdapter
 import com.appfactory.infrastructure.connectors.SqlDelightConnectorRegistry
 import com.appfactory.infrastructure.connectors.SupabaseConnectorRegistry
+import com.appfactory.infrastructure.sync.createPlatformSyncEngine
 import com.appfactory.infrastructure.storage.local.DatabaseDriverFactory
 import com.appfactory.infrastructure.storage.local.SqlDelightAppSettingsRepository
 import com.appfactory.infrastructure.storage.local.SqlDelightFeatureFlagRepository
@@ -40,6 +42,10 @@ object InfrastructureModule {
 
         single<AuthProvider> {
             SupabaseAuthAdapter(get())
+        }
+
+        single<SyncEngine> {
+            createPlatformSyncEngine()
         }
 
         single<AppDatabase> {
