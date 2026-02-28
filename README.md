@@ -14,11 +14,11 @@ and a reusable template for future applications.
 Short version:
 
 ```bash
-# Prerequisites: JDK 21, Gradle 8.11+, Docker
+# Prerequisites: JDK 21, Gradle 9.3+, Docker
 # See docs/setup.md for installation instructions
 
 rm -rf .gradle build build-logic/build          # clear any stale state
-gradle wrapper --gradle-version 8.11.1 --distribution-type bin
+gradle wrapper --gradle-version 9.3.1 --distribution-type bin
 cp .env.example .env                            # fill in your credentials
 docker compose -f scripts/deploy/docker-compose.yml up -d
 ./gradlew :domain:jvmTest :application:jvmTest  # hard-gate tests

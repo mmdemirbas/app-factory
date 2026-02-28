@@ -770,11 +770,11 @@ Meta/admin domain entities, all port interfaces, fakes for all ports, property-b
 SQLDelight schema stubs, local repository adapters, integration tests against SQLite, DI wiring for local-only operation.
 *Deliverable:* App runs on all platforms. Config persists across restarts. No network required.
 
-**Phase 4 — Backend and central storage**
+**Phase 4 — Backend and central storage (Done)**
 Supabase Postgres schema, remote repository adapters, Ktor routes, Supabase Auth.
 *Deliverable:* Logged-in user configures connector. Config stored in Supabase. Retrieved on second device.
 
-**Phase 5 — Sync**
+**Phase 5 — Sync (Current)**
 `PowerSyncKotlinAdapter` and `PowerSyncWebAdapter`. Offline mode verified end-to-end. Sync status dashboard.
 *Deliverable:* Full offline-first flow on Android and Desktop. Web syncs via JS adapter.
 

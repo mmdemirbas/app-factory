@@ -30,13 +30,13 @@ in `gradle.properties`).
 > falling back to JVM_Y" if your Gradle daemon runs on a very recent JDK. These
 > are warnings only — the build still succeeds. Compilation always targets JVM 17.
 
-### 2. Gradle 8.11+
+### 2. Gradle 9.3+
 
 Only needed once to generate the wrapper. After that, always use `./gradlew`.
 
 ```bash
 brew install gradle
-gradle --version  # should show 8.x.x
+gradle --version  # should show 9.x.x
 ```
 
 ### 3. Docker Desktop
@@ -86,7 +86,7 @@ This is safe and idempotent. Gradle rebuilds all caches on the next run.
 ### Step 2 — Generate the Gradle wrapper
 
 ```bash
-gradle wrapper --gradle-version $(gradle --version | grep "^Gradle" | awk '{print $2}') --distribution-type bin
+gradle wrapper --gradle-version 9.3.1 --distribution-type bin
 ```
 
 This generates `gradlew`. You only run this once per clone.
@@ -135,10 +135,24 @@ Both should pass with no errors.
 ```bash
 ./gradlew :clients:desktop:run                  # Desktop app
 ./gradlew :backend:run                          # Backend → http://localhost:8080/health
-./gradlew :clients:web:wasmJsBrowserRun         # Web (opens browser)
+./gradlew :clients:web:wasmJsBrowserDevelopmentRun  # Web dev server (opens browser)
 ./gradlew :clients:android:installDebug         # Android (needs device/emulator)
 ./gradlew :domain:jvmTest :application:jvmTest  # Tests
 ```
+
+---
+
+### JetBrains IDE run configurations
+
+Shared run configurations under `.idea/runConfigurations` are task-based and map to:
+
+- `backendApp` → `:backend:run`
+- `desktopApp` → `:clients:desktop:run`
+- `webApp` → `:clients:web:wasmJsBrowserDevelopmentRun`
+- `androidApp` → `:clients:android:installDebug`
+- `iosApp` → `:clients:shared-ui:linkDebugFrameworkIosSimulatorArm64` (builds iOS simulator framework)
+
+Use Xcode to launch the full iOS application UI.
 
 ---
 
@@ -161,7 +175,7 @@ Clear the cache and retry:
 
 ```bash
 rm -rf .gradle build build-logic/build
-gradle wrapper --gradle-version $(gradle --version | grep "^Gradle" | awk '{print $2}') --distribution-type bin
+gradle wrapper --gradle-version 9.3.1 --distribution-type bin
 ```
 
 **"Plugin not found":** Every plugin applied inside a convention plugin
