@@ -1,16 +1,17 @@
-# Current work: Phase 6 — First connector
+# Current work: Phase 7 — User System
 
 ## Goal
-Implement the first full connector (Google Sheets) with stable intermediate types, field mapping UI, and two-way sync end-to-end.
+Implement unified team & user model allowing collaborative multi-tenant configurations of the meta-app, replacing single-owner limits.
 
-## Definition of done for Phase 6
-- [ ] Google Sheets connector implemented with stable intermediate types (`infrastructure/connectors/google-sheets/`).
-- [ ] `NangoOAuthAdapter` implemented and configured for Google Sheets OAuth flow.
-- [ ] Field mapping UI created to map Google Sheets columns to domain entities.
-- [ ] Complete lifecycle verified: discover → authenticate → configure → sync → display → push change back.
-- [ ] Two-way sync end-to-end validated.
+## Definition of done for Phase 7
+- [ ] Base `User` and `Team` entity domain models created.
+- [ ] Connectors and mapping references updated to belong to `TeamId` instead of global singletons.
+- [ ] Team switching UI implemented.
+- [ ] Access control limits API access purely to a users active team.
 
 ## Persistent Progress Tracking
 Previous phase completions and walkthroughs are stored persistently in the repository at:
 - `docs/phases/phase-5.md`
 - `docs/phases/phase-5-walkthrough.md`
+- `docs/phases/phase-6.md`
+- `docs/phases/phase-6-walkthrough.md`
