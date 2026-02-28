@@ -7,6 +7,7 @@ import com.appfactory.domain.port.ConnectorRegistry
 import com.appfactory.domain.port.FeatureFlagRepository
 import com.appfactory.domain.port.OAuthProvider
 import com.appfactory.domain.port.SyncEngine
+import com.appfactory.domain.port.TeamRepository
 import com.appfactory.infrastructure.auth.SupabaseAuthAdapter
 import com.appfactory.infrastructure.auth.nango.NangoClient
 import com.appfactory.infrastructure.auth.nango.NangoOAuthAdapter
@@ -21,6 +22,7 @@ import com.appfactory.infrastructure.storage.local.InMemoryActiveTeamRepository
 import com.appfactory.domain.port.ActiveTeamRepository
 import com.appfactory.infrastructure.storage.remote.SupabaseAppSettingsRepository
 import com.appfactory.infrastructure.storage.remote.SupabaseFeatureFlagRepository
+import com.appfactory.infrastructure.storage.remote.SupabaseTeamRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.auth.Auth
@@ -122,6 +124,10 @@ object InfrastructureModule {
                 supabaseClient = get(),
                 availableConnectors = emptyList()
             )
+        }
+
+        single<TeamRepository> {
+            SupabaseTeamRepository(get())
         }
     }
 }

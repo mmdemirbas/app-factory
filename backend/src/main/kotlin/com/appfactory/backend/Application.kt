@@ -1,6 +1,8 @@
 package com.appfactory.backend
 
 import com.appfactory.backend.auth.authRoutes
+import com.appfactory.backend.auth.configureJwtAuthentication
+import com.appfactory.backend.auth.SUPABASE_JWT_AUTH
 import com.appfactory.backend.connectors.connectorRoutes
 import com.appfactory.backend.featureflags.featureFlagRoutes
 import com.appfactory.backend.sync.syncRoutes
@@ -9,6 +11,7 @@ import com.appfactory.domain.port.AuthProvider
 import com.appfactory.domain.port.ConnectorRegistry
 import com.appfactory.domain.port.FeatureFlagRepository
 import com.appfactory.domain.port.SyncEngine
+import com.appfactory.domain.port.TeamRepository
 import com.appfactory.infrastructure.InfrastructureModule
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -21,6 +24,7 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.cors.routing.CORS
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.routing.routing
+import io.ktor.server.auth.authenticate
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import kotlinx.serialization.json.Json
@@ -35,6 +39,7 @@ fun main() {
 
 fun Application.module() {
     configureDependencyInjection()
+    configureJwtAuthentication()
     val koin = getKoin()
 
     install(CallLogging)
@@ -42,8 +47,11 @@ fun Application.module() {
         anyHost()
         allowMethod(HttpMethod.Get)
         allowMethod(HttpMethod.Post)
+        allowMethod(HttpMethod.Put)
         allowHeader(HttpHeaders.ContentType)
         allowHeader(HttpHeaders.Accept)
+        allowHeader(HttpHeaders.Authorization)
+        allowHeader("X-Team-ID")
         allowNonSimpleContentTypes = true
     }
     install(ContentNegotiation) {
@@ -60,12 +68,15 @@ fun Application.module() {
         val featureFlagRepo = koin.get<FeatureFlagRepository>(named(InfrastructureModule.QUALIFIER_REMOTE))
         val connectorRegistry = koin.get<ConnectorRegistry>(named(InfrastructureModule.QUALIFIER_REMOTE))
         val syncEngine = koin.get<SyncEngine>()
+        val teamRepository = koin.get<TeamRepository>()
 
         healthRoutes()
-        appSettingsRoutes(settingsRepo)
         authRoutes(authProvider)
-        featureFlagRoutes(featureFlagRepo)
-        connectorRoutes(connectorRegistry)
-        syncRoutes(syncEngine)
+        authenticate(SUPABASE_JWT_AUTH) {
+            appSettingsRoutes(settingsRepo, teamRepository)
+            featureFlagRoutes(featureFlagRepo, teamRepository)
+            connectorRoutes(connectorRegistry)
+            syncRoutes(syncEngine)
+        }
     }
 }

@@ -1,16 +1,22 @@
 package com.appfactory.backend.featureflags
 
+import com.appfactory.backend.auth.requireAuthorizedTeam
 import com.appfactory.domain.port.FeatureFlagRepository
+import com.appfactory.domain.port.TeamRepository
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 
-fun Route.featureFlagRoutes(featureFlagRepo: FeatureFlagRepository) {
+fun Route.featureFlagRoutes(
+    featureFlagRepo: FeatureFlagRepository,
+    teamRepository: TeamRepository,
+) {
     route("/api/feature-flags") {
         get {
-            val teamId = call.request.headers["X-Team-ID"]?.let { com.appfactory.domain.common.EntityId(it) } ?: com.appfactory.domain.common.EntityId("default_team")
+            val accessContext = call.requireAuthorizedTeam(teamRepository) ?: return@get
+            val teamId = accessContext.teamId
             val flags = featureFlagRepo.getAll(teamId)
             call.respond(HttpStatusCode.OK, flags)
         }
