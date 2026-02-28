@@ -1,29 +1,51 @@
-*.iml
-.kotlin/
-.gradle/
-**/build/
-!src/**/build/
-xcuserdata/
-local.properties
+# IDE and Editor Configuration
 .idea/
 !.idea/runConfigurations/
+.vscode/
+*.iml
+
+# Build and Gradle
+.gradle/
+.gradle-local/
+**/build/
+!src/**/build/
+
+# Kotlin
+.kotlin/
+
+# macOS
 .DS_Store
-captures
-.externalNativeBuild
-.cxx
+xcuserdata/
+DerivedData/
+
+# Xcode
 *.xcodeproj/*
 !*.xcodeproj/project.pbxproj
 !*.xcodeproj/xcshareddata/
 !*.xcodeproj/project.xcworkspace/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
+*.xcworkspace/xcuserdata/
+
+# Native Build
+.externalNativeBuild
+.cxx
+
+# Swift Package Manager
+.swiftpm/
+
+# Security and Credentials
 .env
+.secret/
 *.jks
 *.keystore
-*.xcworkspace/xcuserdata/
-DerivedData/
-.swiftpm/
-*.db
-/.vscode/
-/.secret/
+
+# Package Managers
 yarn.lock
+
+# Database
+*.db
+
+# Android
+captures
+local.properties
