@@ -1,0 +1,71 @@
+{
+    "tables": [
+        {
+            "name": "app_settings",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "text"
+                },
+                {
+                    "name": "environment",
+                    "type": "text"
+                },
+                {
+                    "name": "is_auto_sync_enabled",
+                    "type": "integer"
+                },
+                {
+                    "name": "updated_at",
+                    "type": "integer"
+                }
+            ]
+        },
+        {
+            "name": "feature_flag",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "text"
+                },
+                {
+                    "name": "name",
+                    "type": "text"
+                },
+                {
+                    "name": "description",
+                    "type": "text"
+                },
+                {
+                    "name": "is_enabled",
+                    "type": "integer"
+                },
+                {
+                    "name": "updated_at",
+                    "type": "integer"
+                }
+            ]
+        },
+        {
+            "name": "configured_connector",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "text"
+                },
+                {
+                    "name": "descriptor_id",
+                    "type": "text"
+                },
+                {
+                    "name": "config_json",
+                    "type": "text"
+                },
+                {
+                    "name": "updated_at",
+                    "type": "integer"
+                }
+            ]
+        }
+    ]
+}

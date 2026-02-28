@@ -1,22 +1,18 @@
-# Current work: Phase 2 — Domain and Application Layer
+# Current work: Phase 3 — Local persistence
 
 ## Goal
-Implement the full meta/admin domain with all port interfaces, fakes, 
-property-based tests, and use cases. Zero infrastructure code yet.
+Implement SQLDelight schema stubs, local repository adapters, and wire everything up for local-only operation.
 
-## Definition of done for Phase 2
-- [ ] All port interfaces defined in domain/port/
-- [ ] Fake* implementation for every port in domain/src/commonTest/.../fake/
-- [ ] Property-based tests covering all domain business rules
-- [ ] ./gradlew :domain:jvmTest passes with >90% coverage
-- [ ] ./gradlew :application:jvmTest passes
-- [ ] Zero infrastructure imports in domain or application
+## Definition of done for Phase 3
+- [ ] SQLDelight schema mirrors established (for compile-time validation) in `domain` or `infrastructure` as per ADR.
+- [ ] Local repository adapters implemented using SQLDelight (`infrastructure/storage/local/`).
+- [ ] Integration tests against local SQLite verifying persistence.
+- [ ] DI wiring configured to allow local-only operation by default.
+- [ ] App runs safely across platforms retaining offline data state.
 
-## What's already done
-- EntityId, Timestamp, DomainResult in domain.common
-- SyncEngine, AuthProvider, ConnectorRegistry, OAuthProvider, ReplicaSink ports
-- FeatureFlag entity with validation
-- FeatureFlagRepository port
-- FakeConnectorRegistry, FakeFeatureFlagRepository
-- ConfigureConnectorUseCase, CreateFeatureFlagUseCase, ToggleFeatureFlagUseCase
-- ArchUnit tests for domain and application
+## What's already done (Phase 2)
+- Domain entities (`AppSettings`, `FeatureFlag`, etc.) configured.
+- Port interfaces (`SyncEngine`, `AuthProvider`, `ConnectorRegistry`, `AppSettingsRepository`, etc.) established.
+- Fake implementations supplied for all ports.
+- App use cases implemented with 100% property-based testing.
+- ArchUnit verifications for 0 infrastructure dependencies remain unbroken.

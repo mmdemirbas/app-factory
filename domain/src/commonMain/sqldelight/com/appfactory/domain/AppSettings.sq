@@ -1,0 +1,19 @@
+-- COMPILE-TIME VALIDATION STUB ONLY.
+-- Runtime schema is owned by PowerSync. See infrastructure/sync/schema/schema.json
+-- Keep this file in sync with the PowerSync schema definition.
+CREATE TABLE AppSettings (
+    id TEXT NOT NULL PRIMARY KEY,
+    environment TEXT NOT NULL,
+    is_auto_sync_enabled INTEGER NOT NULL DEFAULT 1,
+    updated_at INTEGER NOT NULL
+);
+
+getSettings:
+SELECT * FROM AppSettings LIMIT 1;
+
+upsert:
+INSERT OR REPLACE INTO AppSettings(id, environment, is_auto_sync_enabled, updated_at)
+VALUES (?, ?, ?, ?);
+
+clearDb:
+DELETE FROM AppSettings;

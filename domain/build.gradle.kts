@@ -2,6 +2,16 @@ plugins {
     id("kmp-library")
     id("detekt-rules")
     id("org.jetbrains.kotlinx.kover")
+    alias(libs.plugins.sqldelight)
+}
+
+sqldelight {
+    databases {
+        create("AppDatabase") {
+            packageName.set("com.appfactory.domain")
+            srcDirs("src/commonMain/sqldelight")
+        }
+    }
 }
 
 kotlin {

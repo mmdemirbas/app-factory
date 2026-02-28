@@ -1,0 +1,24 @@
+-- COMPILE-TIME VALIDATION STUB ONLY.
+-- Runtime schema is owned by PowerSync. See infrastructure/sync/schema/schema.json
+-- Keep this file in sync with the PowerSync schema definition.
+CREATE TABLE FeatureFlag (
+    id TEXT NOT NULL PRIMARY KEY,
+    key TEXT NOT NULL,
+    description TEXT NOT NULL,
+    default_enabled INTEGER NOT NULL DEFAULT 0,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL
+);
+
+selectAll:
+SELECT * FROM FeatureFlag ORDER BY updated_at DESC;
+
+selectById:
+SELECT * FROM FeatureFlag WHERE id = ?;
+
+upsert:
+INSERT OR REPLACE INTO FeatureFlag(id, key, description, default_enabled, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?);
+
+deleteById:
+DELETE FROM FeatureFlag WHERE id = ?;

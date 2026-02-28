@@ -1,0 +1,22 @@
+-- COMPILE-TIME VALIDATION STUB ONLY.
+-- Runtime schema is owned by PowerSync. See infrastructure/sync/schema/schema.json
+-- Keep this file in sync with the PowerSync schema definition.
+CREATE TABLE ConfiguredConnector (
+    id TEXT NOT NULL PRIMARY KEY,
+    descriptor_id TEXT NOT NULL,
+    config_json TEXT NOT NULL,
+    updated_at INTEGER NOT NULL
+);
+
+selectAll:
+SELECT * FROM ConfiguredConnector ORDER BY updated_at DESC;
+
+selectById:
+SELECT * FROM ConfiguredConnector WHERE id = ?;
+
+upsert:
+INSERT OR REPLACE INTO ConfiguredConnector(id, descriptor_id, config_json, updated_at)
+VALUES (?, ?, ?, ?);
+
+deleteById:
+DELETE FROM ConfiguredConnector WHERE id = ?;

@@ -10,7 +10,7 @@ template for future apps. Read docs/architecture.md for the full design.
 3. Read docs/adr/ for the relevant ADR before touching any architectural concern
 
 ## Current phase
-Phase 1 complete. Starting Phase 2: domain and application layer.
+Phase 2 complete. Starting Phase 3: local persistence.
 See docs/architecture.md Section 14 for the phase plan.
 
 ## Module rules (hard gates — violations fail CI)

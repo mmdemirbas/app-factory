@@ -1,16 +1,38 @@
 package com.appfactory.infrastructure
 
-/**
- * Phase 1 placeholder.
- *
- * Real adapter implementations are added in Phase 3 (local persistence),
- * Phase 4 (backend + Supabase), Phase 5 (sync), and Phase 6 (connectors).
- *
- * When adapters are added:
- *  - Each adapter implements a port interface from :domain
- *  - Adapters are registered in Koin modules per platform
- *  - No adapter class imports from :domain.common beyond the allowed types
- */
+import com.appfactory.domain.AppDatabase
+import com.appfactory.domain.port.AppSettingsRepository
+import com.appfactory.domain.port.ConnectorRegistry
+import com.appfactory.domain.port.FeatureFlagRepository
+import com.appfactory.infrastructure.connectors.SqlDelightConnectorRegistry
+import com.appfactory.infrastructure.storage.local.DatabaseDriverFactory
+import com.appfactory.infrastructure.storage.local.SqlDelightAppSettingsRepository
+import com.appfactory.infrastructure.storage.local.SqlDelightFeatureFlagRepository
+import org.koin.core.module.Module
+import org.koin.dsl.module
+
 object InfrastructureModule {
-    // Koin modules for each platform are added here as phases progress.
+    val module: Module = module {
+        // Core Database
+        single<AppDatabase> {
+            val driverFactory = get<DatabaseDriverFactory>()
+            AppDatabase(driverFactory.createDriver())
+        }
+
+        // Repository Adapters
+        single<AppSettingsRepository> {
+            SqlDelightAppSettingsRepository(get())
+        }
+
+        single<FeatureFlagRepository> {
+            SqlDelightFeatureFlagRepository(get())
+        }
+
+        single<ConnectorRegistry> {
+            SqlDelightConnectorRegistry(
+                db = get(),
+                availableDescriptors = emptyList() // Will be loaded dynamically in later phases
+            )
+        }
+    }
 }
