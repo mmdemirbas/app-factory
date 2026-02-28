@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="webAppE2ELocalBackend" type="CompoundRunConfigurationType" factoryName="Compound Run Configuration">
+    <toRun name="backendAppLocalBackend" type="GradleRunConfiguration" />
+    <toRun name="webAppLocalBackend" type="GradleRunConfiguration" />
+    <method v="2" />
+  </configuration>
+</component>

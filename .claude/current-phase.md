@@ -27,3 +27,4 @@ Implement PowerSync-based sync adapters and validate offline-first behavior end-
 - [x] Sync engine mode selection is explicit at composition roots (`SyncEngineMode`), removing hidden env/query runtime toggles.
 - [x] Dashboard layout now handles unbounded web viewport height and keeps controls reachable with internal scrolling.
 - [x] Desktop/Web LocalBackend IDE run configurations added via build-time sync profile generation (no source edits to switch modes).
+- [x] Backend LocalBackend run configuration and compound one-click E2E run configurations added for desktop/web.

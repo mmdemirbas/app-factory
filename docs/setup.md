@@ -172,15 +172,19 @@ Default mode in this repo is `SyncEngineMode.PowerSync`.
 Shared run configurations under `.idea/runConfigurations` are task-based and map to:
 
 - `backendApp` → `:backend:run`
+- `backendAppLocalBackend` → `:backend:run` with `-Pappfactory.backend.port=8081`
 - `desktopApp` → `:clients:desktop:run`
 - `desktopAppLocalBackend` → `:clients:desktop:run` with `-Pappfactory.sync.mode=backend -Pappfactory.backend.baseUrl=http://localhost:8081`
+- `desktopAppE2ELocalBackend` → compound: `backendAppLocalBackend` + `desktopAppLocalBackend`
 - `webApp` → `:clients:web:wasmJsBrowserDevelopmentRun`
 - `webAppLocalBackend` → `:clients:web:wasmJsBrowserDevelopmentRun` with `-Pappfactory.sync.mode=backend -Pappfactory.backend.baseUrl=http://localhost:8081`
+- `webAppE2ELocalBackend` → compound: `backendAppLocalBackend` + `webAppLocalBackend`
 - `androidApp` → `:clients:android:installDebug`
 - `iosApp` → `:clients:shared-ui:linkDebugFrameworkIosSimulatorArm64` (builds iOS simulator framework)
 
 Use Xcode to launch the full iOS application UI.
 For `*LocalBackend` configurations, make sure backend is running and reachable at `http://localhost:8081`.
+For one-click local end-to-end from IDEA, use `webAppE2ELocalBackend` or `desktopAppE2ELocalBackend`.
 
 ---
 

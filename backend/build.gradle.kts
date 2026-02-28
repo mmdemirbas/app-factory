@@ -26,3 +26,9 @@ dependencies {
     testImplementation(libs.ktor.server.test.host)
     testImplementation(kotlin("test"))
 }
+
+tasks.named<JavaExec>("run") {
+    providers.gradleProperty("appfactory.backend.port").orNull?.let { backendPort ->
+        environment("BACKEND_PORT", backendPort)
+    }
+}
