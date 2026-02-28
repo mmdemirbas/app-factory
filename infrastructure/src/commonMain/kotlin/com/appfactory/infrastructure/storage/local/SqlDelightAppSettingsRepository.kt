@@ -29,12 +29,13 @@ class SqlDelightAppSettingsRepository(
         if (result != null) {
             DomainResult.success(
                 AppSettings(
-                    environment = AppEnvironment.valueOf(result.environment),
+                    environment = result.environment.toDomainEnvironment(),
                     isAutoSyncEnabled = result.is_auto_sync_enabled == 1L
                 )
             )
         } else {
-            DomainResult.failure(DomainError.Unknown("No settings found in DB"))
+            // Offline-first default when local DB has not been initialized yet.
+            DomainResult.success(AppSettings())
         }
     }
 
@@ -59,14 +60,11 @@ class SqlDelightAppSettingsRepository(
             .map { entity ->
                 if (entity != null) {
                     AppSettings(
-                        environment = AppEnvironment.valueOf(entity.environment),
+                        environment = entity.environment.toDomainEnvironment(),
                         isAutoSyncEnabled = entity.is_auto_sync_enabled == 1L
                     )
                 } else {
-                    AppSettings(
-                        environment = com.appfactory.domain.model.AppEnvironment.STAGING,
-                        isAutoSyncEnabled = false
-                    )
+                    AppSettings()
                 }
             }
     }
@@ -89,3 +87,6 @@ class SqlDelightAppSettingsRepository(
         }
     }
 }
+
+private fun String.toDomainEnvironment(): AppEnvironment =
+    AppEnvironment.entries.firstOrNull { it.name == this } ?: AppEnvironment.PRODUCTION

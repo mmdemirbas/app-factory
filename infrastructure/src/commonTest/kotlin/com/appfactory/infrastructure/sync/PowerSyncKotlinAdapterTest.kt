@@ -26,8 +26,10 @@ class PowerSyncKotlinAdapterTest {
 
         val result = adapter.syncNow(scope)
         assertTrue(result is DomainResult.Success<SyncResult>)
+        val success = result as DomainResult.Success<SyncResult>
+        assertEquals(1, success.value.recordsSynced)
         assertEquals(
-            SyncState.Synced(SyncResult(scope = scope, recordsSynced = 0, conflictsResolved = 0)),
+            SyncState.Synced(SyncResult(scope = scope, recordsSynced = 1, conflictsResolved = 0)),
             adapter.observeSyncState(scope).first()
         )
     }
@@ -40,5 +42,42 @@ class PowerSyncKotlinAdapterTest {
         val result = adapter.syncNow(scope)
         assertTrue(result is DomainResult.Failure)
         assertEquals(SyncState.Offline, adapter.observeSyncState(scope).first())
+    }
+
+    @Test
+    fun syncNow_whenConnectivityReturns_flushesPreviouslyQueuedScope() = runBlocking {
+        var online = false
+        val scope = SyncScope(entityType = "feature_flag")
+        val adapter = PowerSyncKotlinAdapter(isNetworkAvailable = { online })
+
+        val offlineResult = adapter.syncNow(scope)
+        assertTrue(offlineResult is DomainResult.Failure)
+        assertEquals(SyncState.Offline, adapter.observeSyncState(scope).first())
+
+        online = true
+        val recoveredResult = adapter.syncNow(scope)
+
+        assertTrue(recoveredResult is DomainResult.Success<SyncResult>)
+        val success = recoveredResult as DomainResult.Success<SyncResult>
+        assertEquals(1, success.value.recordsSynced)
+        assertEquals(SyncState.Synced(success.value), adapter.observeSyncState(scope).first())
+    }
+
+    @Test
+    fun syncNow_online_flushesAllQueuedScopesInSingleCycle() = runBlocking {
+        var online = false
+        val settingsScope = SyncScope(entityType = "app_settings")
+        val flagsScope = SyncScope(entityType = "feature_flag")
+        val adapter = PowerSyncKotlinAdapter(isNetworkAvailable = { online })
+
+        adapter.syncNow(settingsScope)
+        adapter.syncNow(flagsScope)
+
+        online = true
+        val result = adapter.syncNow(settingsScope)
+
+        assertTrue(result is DomainResult.Success<SyncResult>)
+        val success = result as DomainResult.Success<SyncResult>
+        assertEquals(2, success.value.recordsSynced)
     }
 }

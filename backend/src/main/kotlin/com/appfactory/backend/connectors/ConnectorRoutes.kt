@@ -2,19 +2,14 @@ package com.appfactory.backend.connectors
 
 import com.appfactory.domain.port.ConnectorDescriptor
 import com.appfactory.domain.port.ConnectorRegistry
-import com.appfactory.infrastructure.InfrastructureModule
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import kotlinx.serialization.Serializable
-import org.koin.core.qualifier.named
-import org.koin.ktor.ext.inject
 
-fun Route.connectorRoutes() {
-    val connectorRegistry: ConnectorRegistry by inject(named(InfrastructureModule.QUALIFIER_REMOTE))
-
+fun Route.connectorRoutes(connectorRegistry: ConnectorRegistry) {
     route("/api/connectors") {
         get {
             call.respond(

@@ -10,7 +10,7 @@ template for future apps. Read docs/architecture.md for the full design.
 3. Read docs/adr/ for the relevant ADR before touching any architectural concern
 
 ## Current phase
-Phase 4 complete. Starting Phase 5: Sync.
+Phase 4 complete. Phase 5 (Sync) in progress with adapter/dashboard/diagnostic routes landed; remaining work is full end-to-end runtime validation.
 See docs/architecture.md Section 14 for the phase plan.
 
 ## Module rules (hard gates — violations fail CI)

@@ -10,11 +10,8 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import kotlinx.serialization.Serializable
-import org.koin.ktor.ext.inject
 
-fun Route.authRoutes() {
-    val authProvider: AuthProvider by inject()
-
+fun Route.authRoutes(authProvider: AuthProvider) {
     route("/api/auth") {
         post("/login") {
             val request = call.receive<LoginRequest>()

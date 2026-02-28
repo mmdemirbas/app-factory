@@ -1,6 +1,7 @@
 package com.appfactory.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -51,68 +52,109 @@ fun App(syncEngine: SyncEngine = PreviewSyncEngine) {
     val coroutineScope = rememberCoroutineScope()
 
     MaterialTheme {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = "App Factory",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Phase 5 — Sync dashboard",
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-            )
-            Spacer(modifier = Modifier.height(20.dp))
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val layoutMode = when {
+                maxHeight < 180.dp -> DashboardLayoutMode.Micro
+                maxHeight < 320.dp -> DashboardLayoutMode.Compact
+                else -> DashboardLayoutMode.Regular
+            }
+            val outerPadding = when (layoutMode) {
+                DashboardLayoutMode.Micro -> 8.dp
+                DashboardLayoutMode.Compact -> 12.dp
+                DashboardLayoutMode.Regular -> 24.dp
+            }
+            val cardPadding = when (layoutMode) {
+                DashboardLayoutMode.Micro -> 8.dp
+                DashboardLayoutMode.Compact -> 12.dp
+                DashboardLayoutMode.Regular -> 16.dp
+            }
+            val cardSpacing = when (layoutMode) {
+                DashboardLayoutMode.Micro -> 6.dp
+                DashboardLayoutMode.Compact -> 8.dp
+                DashboardLayoutMode.Regular -> 10.dp
+            }
+            val showHeader = layoutMode != DashboardLayoutMode.Micro
+            val showSubtitle = layoutMode == DashboardLayoutMode.Regular
+            val showHistory = layoutMode == DashboardLayoutMode.Regular
 
-            Card {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(outerPadding),
+                verticalArrangement = if (layoutMode == DashboardLayoutMode.Regular) Arrangement.Center else Arrangement.Top,
+            ) {
+                if (showHeader) {
                     Text(
-                        text = "Current state: ${syncState.toLabel()}",
-                        fontWeight = FontWeight.Medium,
+                        text = "App Factory",
+                        fontSize = if (layoutMode == DashboardLayoutMode.Compact) 24.sp else 32.sp,
+                        fontWeight = FontWeight.Bold,
                     )
-                    lastSyncResult?.let { result ->
+                    if (showSubtitle) {
+                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Last result: ${result.recordsSynced} synced, ${result.conflictsResolved} conflicts resolved",
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                            text = "Phase 5 — Sync dashboard",
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                         )
                     }
-                    lastError?.let { message ->
-                        Text(
-                            text = "Last error: $message",
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                    Button(
-                        onClick = {
-                            coroutineScope.launch {
-                                when (val result = triggerSync(scope)) {
-                                    is DomainResult.Success -> {
-                                        lastSyncResult = result.value
-                                        lastError = null
-                                    }
+                    Spacer(modifier = Modifier.height(if (layoutMode == DashboardLayoutMode.Compact) 12.dp else 20.dp))
+                }
 
-                                    is DomainResult.Failure -> {
-                                        lastError = result.error.message
+                Card {
+                    Column(
+                        modifier = Modifier.padding(cardPadding),
+                        verticalArrangement = Arrangement.spacedBy(cardSpacing),
+                    ) {
+                        Text(
+                            text = "Current state: ${syncState.toLabel()}",
+                            fontWeight = FontWeight.Medium,
+                        )
+                        if (showHistory) {
+                            lastSyncResult?.let { result ->
+                                Text(
+                                    text = "Last result: ${result.recordsSynced} synced, ${result.conflictsResolved} conflicts resolved",
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                                )
+                            }
+                        }
+                        lastError?.let { message ->
+                            Text(
+                                text = "Last error: $message",
+                                color = MaterialTheme.colorScheme.error,
+                            )
+                        }
+                        Button(
+                            onClick = {
+                                coroutineScope.launch {
+                                    when (val result = triggerSync(scope)) {
+                                        is DomainResult.Success -> {
+                                            lastSyncResult = result.value
+                                            lastError = null
+                                        }
+
+                                        is DomainResult.Failure -> {
+                                            lastError = result.error.message
+                                        }
                                     }
                                 }
                             }
+                        ) {
+                            Text("Sync now")
                         }
-                    ) {
-                        Text("Sync now")
                     }
+                }
+                if (layoutMode != DashboardLayoutMode.Regular) {
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }
     }
+}
+
+private enum class DashboardLayoutMode {
+    Micro,
+    Compact,
+    Regular,
 }
 
 private fun SyncState.toLabel(): String = when (this) {

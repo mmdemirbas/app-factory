@@ -15,16 +15,14 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
-import org.koin.ktor.ext.inject
 
-fun Route.syncRoutes() {
-    val syncEngine: SyncEngine by inject()
+fun Route.syncRoutes(syncEngine: SyncEngine) {
     val triggerSync = TriggerSyncUseCase(syncEngine)
     val observeSyncState = ObserveSyncStateUseCase(syncEngine)
 
     route("/api/sync") {
         post("/trigger") {
-            val request = call.receiveNullable<SyncScopeRequest>()
+            val request = runCatching { call.receiveNullable<SyncScopeRequest>() }.getOrNull()
             val scope = request?.toScope() ?: SyncScope.All
 
             when (val result = triggerSync(scope)) {
@@ -50,8 +48,8 @@ fun Route.syncRoutes() {
         }
 
         get("/state") {
-            val request = call.receiveNullable<SyncScopeRequest>()
-            val scope = request?.toScope() ?: SyncScope.All
+            val entityType = call.queryParameters["entityType"]
+            val scope = if (entityType.isNullOrBlank()) SyncScope.All else SyncScope(entityType = entityType)
             val state = observeSyncState(scope).first()
             call.respond(HttpStatusCode.OK, SyncStateResponse(state = state.toLabel()))
         }
