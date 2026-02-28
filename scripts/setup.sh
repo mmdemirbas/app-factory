@@ -134,14 +134,20 @@ fi
 # 5. HARD-GATE TESTS
 # ─────────────────────────────────────────
 step "Running hard-gate tests"
-./gradlew :domain:jvmTest :application:jvmTest --no-daemon -q
+./gradlew :domain:jvmTest :application:jvmTest --no-daemon -q \
+    --no-configuration-cache \
+    --max-workers=2 \
+    -Dorg.gradle.parallel=false
 ok "ArchUnit + domain tests passed"
 
 # ─────────────────────────────────────────
 # 6. FULL BUILD
 # ─────────────────────────────────────────
 step "Full build"
-./gradlew build --no-daemon -q
+./gradlew build --no-daemon -q \
+    --no-configuration-cache \
+    --max-workers=2 \
+    -Dorg.gradle.parallel=false
 ok "All modules compiled successfully"
 
 # ─────────────────────────────────────────
