@@ -30,6 +30,7 @@ kotlin {
         
         wasmJsMain.dependencies {
             implementation(libs.sqldelight.web.driver)
+            implementation(libs.kotlinx.browser)
         }
     }
 }
